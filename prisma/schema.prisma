@@ -1,0 +1,481 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  TECHNICIAN
+}
+
+enum PlanTier {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum JobStatus {
+  SCHEDULED
+  EN_ROUTE
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  DECLINED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK
+  CHECK
+}
+
+enum PlanFrequency {
+  MONTHLY
+  QUARTERLY
+  BIANNUAL
+  ANNUAL
+}
+
+enum ReminderType {
+  SERVICE_DUE
+  APPOINTMENT_TOMORROW
+  INVOICE_OVERDUE
+}
+
+enum ReminderChannel {
+  EMAIL
+  SMS
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model Organization {
+  id             String    @id @default(uuid())
+  name           String
+  slug           String    @unique
+  logoUrl        String?
+  currency       String    @default("USD")
+  timezone       String    @default("America/New_York")
+  taxRatePercent Float     @default(0.0)
+  invoicePrefix  String    @default("INV-")
+  nextInvoiceNum Int       @default(1001)
+  quotePrefix    String    @default("QTE-")
+  nextQuoteNum   Int       @default(1001)
+  address        String?
+  phone          String?
+  email          String?
+  website        String?
+  
+  planTier       PlanTier  @default(FREE)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  version        Int       @default(1)
+
+  memberships    Membership[]
+  customers      Customer[]
+  properties     Property[]
+  servicePlans   ServicePlan[]
+  jobs           Job[]
+  quotes         Quote[]
+  invoices       Invoice[]
+  treatmentLogs  TreatmentLog[]
+  reminders      Reminder[]
+  subscription   Subscription?
+  auditLogs      AuditLog[]
+}
+
+model User {
+  id            String       @id @default(uuid())
+  name          String?
+  email         String       @unique
+  emailVerified DateTime?
+  passwordHash  String?
+  image         String?
+  phone         String?
+  licenseNumber String?
+  
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deletedAt     DateTime?
+  version       Int          @default(1)
+
+  memberships   Membership[]
+  assignedJobs  Job[]        @relation("TechnicianJobs")
+  treatmentLogs TreatmentLog[]
+  auditLogs     AuditLog[]
+}
+
+model Membership {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String
+  role           Role         @default(TECHNICIAN)
+  inviteToken    String?      @unique
+  inviteAccepted Boolean      @default(true)
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  version        Int          @default(1)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Customer {
+  id             String       @id @default(uuid())
+  organizationId String
+  firstName      String
+  lastName       String
+  companyName    String?
+  email          String
+  phone          String
+  tags           String?      // comma-separated tags
+  notes          String?
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  version        Int          @default(1)
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  properties     Property[]
+  jobs           Job[]
+  quotes         Quote[]
+  invoices       Invoice[]
+  reminders      Reminder[]
+
+  @@index([organizationId])
+  @@index([organizationId, email])
+}
+
+model Property {
+  id                 String       @id @default(uuid())
+  organizationId     String
+  customerId         String
+  address            String
+  unit               String?
+  city               String
+  state              String
+  postalCode         String
+  country            String       @default("US")
+  notes              String?
+  gateCode           String?
+  petsKidsWarnings   String?
+  squareFeet         Int?
+  
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  deletedAt          DateTime?
+  version            Int          @default(1)
+
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer           Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  jobs               Job[]
+  servicePlans       ServicePlan[]
+  quotes             Quote[]
+
+  @@index([organizationId])
+  @@index([customerId])
+}
+
+model ServicePlan {
+  id              String        @id @default(uuid())
+  organizationId  String
+  propertyId      String
+  name            String
+  description     String?
+  frequency       PlanFrequency @default(QUARTERLY)
+  priceCents      Int
+  nextServiceDate DateTime
+  autoInvoice     Boolean       @default(true)
+  active          Boolean       @default(true)
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+  version         Int           @default(1)
+
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  property        Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  jobs            Job[]
+
+  @@index([organizationId])
+  @@index([propertyId])
+}
+
+model Job {
+  id                 String         @id @default(uuid())
+  organizationId     String
+  customerId         String
+  propertyId         String
+  servicePlanId      String?
+  technicianId       String?
+  title              String
+  description        String?
+  status             JobStatus      @default(SCHEDULED)
+  scheduledDate      DateTime
+  scheduledStartTime String?        // e.g. "09:00"
+  scheduledEndTime   String?        // e.g. "10:30"
+  routeOrder         Int            @default(0)
+  completedAt        DateTime?
+  notes              String?
+  
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+  version            Int            @default(1)
+
+  organization       Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer           Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  property           Property       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  servicePlan        ServicePlan?   @relation(fields: [servicePlanId], references: [id], onDelete: SetNull)
+  technician         User?          @relation("TechnicianJobs", fields: [technicianId], references: [id], onDelete: SetNull)
+  treatmentLogs      TreatmentLog[]
+  invoices           Invoice[]
+  reminders          Reminder[]
+
+  @@index([organizationId])
+  @@index([technicianId])
+  @@index([scheduledDate])
+}
+
+model Quote {
+  id             String           @id @default(uuid())
+  organizationId String
+  customerId     String
+  propertyId     String?
+  quoteNumber    String
+  title          String
+  status         QuoteStatus      @default(DRAFT)
+  subtotalCents  Int              @default(0)
+  taxCents       Int              @default(0)
+  totalCents     Int              @default(0)
+  validUntil     DateTime?
+  notes          String?
+  publicToken    String           @unique @default(uuid())
+  acceptedAt     DateTime?
+  declinedAt     DateTime?
+  declineReason  String?
+  
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  deletedAt      DateTime?
+  version        Int              @default(1)
+
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer       Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  property       Property?        @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  lineItems      QuoteLineItem[]
+  invoice        Invoice?
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([publicToken])
+}
+
+model QuoteLineItem {
+  id          String   @id @default(uuid())
+  quoteId     String
+  description String
+  quantity    Int      @default(1)
+  unitPriceCents Int
+  totalCents  Int
+  
+  quote       Quote    @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+
+  @@index([quoteId])
+}
+
+model Invoice {
+  id             String            @id @default(uuid())
+  organizationId String
+  customerId     String
+  jobId          String?
+  quoteId        String?           @unique
+  invoiceNumber  String
+  status         InvoiceStatus     @default(DRAFT)
+  subtotalCents  Int               @default(0)
+  taxCents       Int               @default(0)
+  totalCents     Int               @default(0)
+  paidCents      Int               @default(0)
+  dueDate        DateTime
+  notes          String?
+  publicToken    String            @unique @default(uuid())
+  stripePaymentIntentId String?
+  
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  deletedAt      DateTime?
+  version        Int               @default(1)
+
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer       Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  job            Job?              @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  quote          Quote?            @relation(fields: [quoteId], references: [id], onDelete: SetNull)
+  lineItems      InvoiceLineItem[]
+  payments       Payment[]
+  reminders      Reminder[]
+
+  @@index([organizationId])
+  @@index([customerId])
+  @@index([publicToken])
+}
+
+model InvoiceLineItem {
+  id             String   @id @default(uuid())
+  invoiceId      String
+  description    String
+  quantity       Int      @default(1)
+  unitPriceCents Int
+  totalCents     Int
+  
+  invoice        Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  invoiceId      String
+  amountCents    Int
+  method         PaymentMethod @default(CARD)
+  reference      String?       // check #, stripe charge id, etc.
+  notes          String?
+  paidAt         DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  
+  invoice        Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model TreatmentLog {
+  id                    String       @id @default(uuid())
+  organizationId        String
+  jobId                 String
+  technicianId          String
+  pestType              String       // e.g. "Termites", "Roaches", "Ants", "Bedbugs", "Rodents"
+  chemicalProduct       String       // e.g. "Taurus SC", "Demand CS", "Advion Gel"
+  epaRegistrationNumber String       // EPA Reg No.
+  quantity              String       // e.g. "1.5 gallons 0.06% dilution"
+  areasTreated          String       // e.g. "Exterior foundation perimeter, garage interior, crawlspace"
+  applicatorName        String?
+  licenseNumber         String?
+  technicianSignature   String?      // base64 png data URL
+  photos                String?      // JSON array of photo URLs or local keys
+  notes                 String?
+  windSpeed             String?      // e.g. "3 mph NW"
+  temperature           String?      // e.g. "72 F"
+  
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  deletedAt             DateTime?
+  version               Int          @default(1)
+
+  organization          Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  job                   Job          @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  technician            User         @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([jobId])
+}
+
+model Reminder {
+  id             String          @id @default(uuid())
+  organizationId String
+  customerId     String
+  jobId          String?
+  invoiceId      String?
+  type           ReminderType
+  channel        ReminderChannel @default(EMAIL)
+  status         ReminderStatus  @default(PENDING)
+  scheduledFor   DateTime
+  sentAt         DateTime?
+  recipientEmail String?
+  recipientPhone String?
+  subject        String?
+  body           String
+  errorMessage   String?
+
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  version        Int             @default(1)
+
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  customer       Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  job            Job?            @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  invoice        Invoice?        @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([status, scheduledFor])
+}
+
+model Subscription {
+  id                   String       @id @default(uuid())
+  organizationId       String       @unique
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  plan                 PlanTier     @default(FREE)
+  status               String       @default("active")
+  currentPeriodEnd     DateTime?
+  cancelAtPeriodEnd    Boolean      @default(false)
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  organization         Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id             String       @id @default(uuid())
+  organizationId String
+  userId         String?
+  action         String       // e.g. "CREATE", "UPDATE", "DELETE", "SIGN_IN"
+  entityType     String       // e.g. "Customer", "Job", "Invoice"
+  entityId       String
+  changes        String?      // JSON representation of diff or payload
+  ipAddress      String?
+  userAgent      String?
+
+  createdAt      DateTime     @default(now())
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  @@index([entityType, entityId])
+}
+

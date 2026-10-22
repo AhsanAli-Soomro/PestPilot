@@ -1,0 +1,194 @@
+import NextAuth, { type DefaultSession } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcryptjs";
+import { db } from "./db";
+import { Role, PlanTier } from "@prisma/client";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      organizationId: string;
+      organizationName: string;
+      role: Role;
+      planTier: PlanTier;
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id?: string;
+    organizationId?: string;
+    organizationName?: string;
+    role?: Role;
+    planTier?: PlanTier;
+  }
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
+  session: { strategy: "jwt" },
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+  providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID || "",
+      clientSecret: process.env.AUTH_GOOGLE_SECRET || "",
+    }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const email = (credentials.email as string).toLowerCase().trim();
+        const password = credentials.password as string;
+
+        const user = await db.user.findUnique({
+          where: { email },
+          include: {
+            memberships: {
+              where: { deletedAt: null },
+              include: { organization: true },
+              take: 1,
+            },
+          },
+        });
+
+        if (!user || !user.passwordHash) {
+          return null;
+        }
+
+        const isValid = await bcrypt.compare(password, user.passwordHash);
+        if (!isValid) {
+          return null;
+        }
+
+        const activeMembership = user.memberships[0];
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          organizationId: activeMembership?.organizationId || "",
+          organizationName: activeMembership?.organization?.name || "",
+          role: activeMembership?.role || Role.TECHNICIAN,
+          planTier: activeMembership?.organization?.planTier || PlanTier.FREE,
+        };
+      },
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.email) {
+        try {
+          const email = user.email.toLowerCase().trim();
+          let dbUser = await db.user.findUnique({
+            where: { email },
+            include: {
+              memberships: {
+                where: { deletedAt: null },
+                include: { organization: true },
+                orderBy: { createdAt: "desc" },
+                take: 1,
+              },
+            },
+          });
+
+          if (!dbUser) {
+            dbUser = await db.user.create({
+              data: {
+                email,
+                name: user.name || "PestPilot User",
+                image: user.image,
+              },
+              include: {
+                memberships: {
+                  where: { deletedAt: null },
+                  include: { organization: true },
+                },
+              },
+            });
+          }
+
+          user.id = dbUser.id;
+          const activeMembership = dbUser.memberships?.[0];
+          if (activeMembership) {
+            user.organizationId = activeMembership.organizationId;
+            user.organizationName = activeMembership.organization.name;
+            user.role = activeMembership.role;
+            user.planTier = activeMembership.organization.planTier;
+          }
+        } catch (err) {
+          console.error("Error in Google signIn callback:", err);
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.id = user.id;
+        token.organizationId = user.organizationId;
+        token.organizationName = user.organizationName;
+        token.role = user.role;
+        token.planTier = user.planTier;
+      }
+
+      if (trigger === "update" && session) {
+        if (session.user?.organizationId) token.organizationId = session.user.organizationId;
+        if (session.user?.organizationName) token.organizationName = session.user.organizationName;
+        if (session.user?.role) token.role = session.user.role;
+        if (session.user?.planTier) token.planTier = session.user.planTier;
+      }
+
+      // If token is missing organizationId, or if trigger was update, sync from DB
+      if (!token.organizationId || trigger === "update") {
+        try {
+          const membership = await db.membership.findFirst({
+            where: {
+              OR: [
+                token.id ? { userId: token.id as string } : {},
+                token.email ? { user: { email: (token.email as string).toLowerCase().trim() } } : {},
+              ],
+              deletedAt: null,
+            },
+            include: { organization: true },
+            orderBy: { createdAt: "desc" },
+          });
+
+          if (membership) {
+            token.id = membership.userId;
+            token.organizationId = membership.organizationId;
+            token.organizationName = membership.organization.name;
+            token.role = membership.role;
+            token.planTier = membership.organization.planTier;
+          }
+        } catch (err) {
+          console.error("Error syncing membership in jwt callback:", err);
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.organizationId = (token.organizationId as string) || "";
+        session.user.organizationName = (token.organizationName as string) || "";
+        session.user.role = (token.role as Role) || Role.TECHNICIAN;
+        session.user.planTier = (token.planTier as PlanTier) || PlanTier.FREE;
+      }
+      return session;
+    },
+  },
+  secret: process.env.AUTH_SECRET,
+});
+

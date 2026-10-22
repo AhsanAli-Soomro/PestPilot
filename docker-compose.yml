@@ -1,0 +1,17 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: pestpilot_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pestpilot
+      POSTGRES_PASSWORD: pestpilot_password
+      POSTGRES_DB: pestpilot_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pestpilot_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pestpilot_pgdata:
+

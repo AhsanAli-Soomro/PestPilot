@@ -1,0 +1,38 @@
+import * as React from "react";
+import { notFound } from "next/navigation";
+import { db } from "@/lib/db";
+import { PublicInvoiceClient } from "./public-invoice-client";
+
+interface PageProps {
+  params: Promise<{ token: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function PublicInvoicePage({ params, searchParams }: PageProps) {
+  const { token } = await params;
+  const sp = await searchParams;
+  const paymentSuccess = sp.paid === "true";
+
+  const invoice = await db.invoice.findUnique({
+    where: { publicToken: token },
+    include: {
+      organization: true,
+      customer: true,
+      job: { include: { property: true } },
+      lineItems: true,
+      payments: { orderBy: { paidAt: "desc" } },
+    },
+  });
+
+  if (!invoice || invoice.deletedAt) {
+    notFound();
+  }
+
+  return (
+    <PublicInvoiceClient
+      invoice={invoice}
+      paymentSuccess={paymentSuccess}
+    />
+  );
+}
+

@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* PestPilot Clean Deep Green & Warm Amber palette */
+    --background: 140 20% 98%;
+    --foreground: 155 40% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 155 40% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 155 40% 12%;
+
+    /* Deep forest green #1b4332 -> hsl(154, 42%, 18%) */
+    --primary: 154 45% 22%;
+    --primary-foreground: 140 30% 98%;
+
+    --secondary: 148 18% 92%;
+    --secondary-foreground: 154 45% 20%;
+
+    --muted: 145 15% 93%;
+    --muted-foreground: 150 12% 40%;
+
+    /* Accent warm amber #d97706 -> hsl(38, 92%, 44%) */
+    --accent: 38 92% 46%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 145 15% 86%;
+    --input: 145 15% 86%;
+    --ring: 154 45% 22%;
+
+    --radius: 0.625rem;
+
+    --forest-50: 144 35% 96%;
+    --forest-100: 146 36% 91%;
+    --forest-500: 152 45% 38%;
+    --forest-600: 153 47% 28%;
+    --forest-700: 154 45% 22%;
+    --forest-800: 155 46% 16%;
+    --forest-900: 155 48% 10%;
+
+    --amber-50: 48 100% 96%;
+    --amber-500: 38 92% 50%;
+    --amber-600: 36 90% 43%;
+    --amber-700: 31 82% 35%;
+  }
+
+  .dark {
+    --background: 155 35% 7%;
+    --foreground: 140 20% 96%;
+
+    --card: 155 30% 10%;
+    --card-foreground: 140 20% 96%;
+
+    --popover: 155 30% 10%;
+    --popover-foreground: 140 20% 96%;
+
+    /* Forest green in dark mode */
+    --primary: 152 50% 42%;
+    --primary-foreground: 155 35% 7%;
+
+    --secondary: 155 25% 16%;
+    --secondary-foreground: 140 20% 94%;
+
+    --muted: 155 22% 16%;
+    --muted-foreground: 145 15% 65%;
+
+    --accent: 38 92% 52%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 155 20% 18%;
+    --input: 155 20% 18%;
+    --ring: 152 50% 42%;
+
+    --forest-50: 155 30% 12%;
+    --forest-100: 155 28% 18%;
+    --forest-500: 152 50% 42%;
+    --forest-600: 152 48% 50%;
+    --forest-700: 152 45% 60%;
+    --forest-800: 152 40% 75%;
+    --forest-900: 140 20% 95%;
+
+    --amber-50: 45 40% 15%;
+    --amber-500: 38 92% 52%;
+    --amber-600: 38 92% 58%;
+    --amber-700: 38 92% 66%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
+  }
+  /* High visibility outdoors min touch targets */
+  button, a, input, select, textarea {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+}
+
+/* Touch targets min 44px for field technicians */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
