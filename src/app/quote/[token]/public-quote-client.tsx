@@ -162,28 +162,30 @@ export function PublicQuoteClient({ quote }: PublicQuoteClientProps) {
                 Services & Applications
               </h3>
               <div className="border border-border rounded-xl overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-secondary/60 border-b border-border text-muted-foreground font-semibold">
-                    <tr>
-                      <th className="p-3">Service Description</th>
-                      <th className="p-3 text-center w-16">Qty</th>
-                      <th className="p-3 text-right w-24">Rate</th>
-                      <th className="p-3 text-right w-28">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {quote.lineItems.map((item: any) => (
-                      <tr key={item.id} className="hover:bg-muted/30">
-                        <td className="p-3 font-medium text-foreground">{item.description}</td>
-                        <td className="p-3 text-center">{item.quantity}</td>
-                        <td className="p-3 text-right">{formatMoney(item.unitPriceCents, org.currency)}</td>
-                        <td className="p-3 text-right font-bold text-foreground">
-                          {formatMoney(item.totalCents, org.currency)}
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-secondary/60 border-b border-border text-muted-foreground font-semibold">
+                      <tr>
+                        <th className="p-3">Service Description</th>
+                        <th className="p-3 text-center w-16">Qty</th>
+                        <th className="p-3 text-right w-24">Rate</th>
+                        <th className="p-3 text-right w-28">Amount</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {quote.lineItems.map((item: any) => (
+                        <tr key={item.id} className="hover:bg-muted/30">
+                          <td className="p-3 font-medium text-foreground">{item.description}</td>
+                          <td className="p-3 text-center">{item.quantity}</td>
+                          <td className="p-3 text-right">{formatMoney(item.unitPriceCents, org.currency)}</td>
+                          <td className="p-3 text-right font-bold text-foreground">
+                            {formatMoney(item.totalCents, org.currency)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
 

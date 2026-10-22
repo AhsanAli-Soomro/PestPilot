@@ -26,6 +26,22 @@ export default function LoginPage() {
 
   const [loading, setLoading] = React.useState(false);
 
+  // Check active session on mount to auto-route already logged in users
+  React.useEffect(() => {
+    fetch("/api/auth/session")
+      .then((r) => r.json())
+      .then((session) => {
+        if (session?.user) {
+          if (session.user.role === "TECHNICIAN") {
+            window.location.href = "/mobile/today";
+          } else {
+            window.location.href = "/dashboard";
+          }
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   // Staff / Technician login
   const handleStaffSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,12 +133,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-muted/30">
+    <div className="min-h-screen flex flex-col justify-center items-center py-8 px-3 sm:px-4 bg-muted/30">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-5 sm:space-y-6">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2">
             <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/25">
@@ -142,42 +158,42 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => setLoginType("staff")}
-            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-lg text-xs font-bold transition-all ${
               loginType === "staff"
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Truck className="w-4 h-4" />
-            <span>Staff &amp; Techs</span>
+            <Truck className="w-4 h-4 shrink-0" />
+            <span className="truncate">Staff &amp; Techs</span>
           </button>
           <button
             type="button"
             onClick={() => setLoginType("customer")}
-            className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-bold transition-all ${
+            className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-2 sm:px-3 rounded-lg text-xs font-bold transition-all ${
               loginType === "customer"
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            <Users className="w-4 h-4" />
-            <span>Customer Portal</span>
+            <Users className="w-4 h-4 shrink-0" />
+            <span className="truncate">Customer Portal</span>
           </button>
         </div>
 
-        <Card className="border-border shadow-xl">
+        <Card className="border-border shadow-xl overflow-hidden">
           {loginType === "staff" ? (
             /* Staff / Technician Form */
             <>
-              <CardHeader className="space-y-1 pb-4">
-                <CardTitle className="text-xl">Staff &amp; Field Technician Sign In</CardTitle>
+              <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-lg sm:text-xl">Staff &amp; Field Technician Sign In</CardTitle>
                 <CardDescription className="text-xs">
                   For company owners, dispatchers, and field technicians
                 </CardDescription>
               </CardHeader>
 
               <form onSubmit={handleStaffSubmit}>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-xs font-semibold">Company Email</Label>
                     <Input
@@ -223,7 +239,7 @@ export default function LoginPage() {
                 </CardContent>
               </form>
 
-              <div className="px-6 pb-4">
+              <div className="px-4 sm:px-6 pb-4">
                 <div className="relative my-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-border" />
@@ -238,26 +254,26 @@ export default function LoginPage() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs h-9"
+                    className="text-[11px] sm:text-xs h-9 px-2"
                     onClick={() => handleStaffDemoLogin("owner@apexcontrol.com", false)}
                   >
-                    <Building2 className="w-3.5 h-3.5 mr-1 text-primary" />
-                    <span>Owner Demo</span>
+                    <Building2 className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
+                    <span className="truncate">Owner Demo</span>
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs h-9 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30"
+                    className="text-[11px] sm:text-xs h-9 px-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30"
                     onClick={() => handleStaffDemoLogin("tech1@apexcontrol.com", true)}
                   >
-                    <Truck className="w-3.5 h-3.5 mr-1" />
-                    <span>Tech Demo (Mobile)</span>
+                    <Truck className="w-3.5 h-3.5 mr-1 shrink-0" />
+                    <span className="truncate">Tech Demo</span>
                   </Button>
                 </div>
               </div>
 
-              <CardFooter className="flex justify-center border-t border-border pt-4">
+              <CardFooter className="flex justify-center border-t border-border p-4 text-center">
                 <p className="text-xs text-muted-foreground">
                   Don&apos;t have a company account?{" "}
                   <Link href="/signup" className="font-semibold text-primary hover:underline">
@@ -269,15 +285,15 @@ export default function LoginPage() {
           ) : (
             /* Customer Portal Form */
             <>
-              <CardHeader className="space-y-1 pb-4">
-                <CardTitle className="text-xl">Customer Portal Access</CardTitle>
+              <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-lg sm:text-xl">Customer Portal Access</CardTitle>
                 <CardDescription className="text-xs">
                   For homeowners &amp; clients to view appointments, EPA reports, and pay invoices
                 </CardDescription>
               </CardHeader>
 
               <form onSubmit={(e) => handleCustomerSubmit(e)}>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
                   <div className="space-y-2">
                     <Label htmlFor="cust-id" className="text-xs font-semibold">
                       Registered Email, Mobile Phone, or Invoice #
@@ -311,7 +327,7 @@ export default function LoginPage() {
                 </CardContent>
               </form>
 
-              <div className="px-6 pb-4">
+              <div className="px-4 sm:px-6 pb-4">
                 <div className="relative my-2">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-border" />
@@ -326,26 +342,26 @@ export default function LoginPage() {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs h-9"
+                    className="text-[11px] sm:text-xs h-9 px-2"
                     onClick={() => handleCustomerSubmit(undefined, "ali.ahmed@example.com")}
                   >
-                    <Home className="w-3.5 h-3.5 mr-1 text-emerald-500" />
-                    <span>Residential Demo</span>
+                    <Home className="w-3.5 h-3.5 mr-1 text-emerald-500 shrink-0" />
+                    <span className="truncate">Residential Demo</span>
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="text-xs h-9"
+                    className="text-[11px] sm:text-xs h-9 px-2"
                     onClick={() => handleCustomerSubmit(undefined, "rdecker@austintacos.com")}
                   >
-                    <Building2 className="w-3.5 h-3.5 mr-1 text-blue-500" />
-                    <span>Commercial Demo</span>
+                    <Building2 className="w-3.5 h-3.5 mr-1 text-blue-500 shrink-0" />
+                    <span className="truncate">Commercial Demo</span>
                   </Button>
                 </div>
               </div>
 
-              <CardFooter className="flex justify-center border-t border-border pt-4">
+              <CardFooter className="flex justify-center border-t border-border p-4 text-center">
                 <p className="text-xs text-muted-foreground">
                   Need to schedule service or get an instant quote?{" "}
                   <Link href="/#free-tools" className="font-semibold text-primary hover:underline">

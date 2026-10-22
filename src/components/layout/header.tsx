@@ -67,9 +67,9 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 px-4 sm:px-6 backdrop-blur-md">
+      <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 px-3 sm:px-6 backdrop-blur-md">
         {/* Mobile & Tablet Menu Button + Brand */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => setMobileDrawerOpen(true)}

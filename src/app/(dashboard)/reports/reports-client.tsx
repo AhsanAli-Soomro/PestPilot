@@ -236,20 +236,22 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
   return (
     <div className="space-y-6">
       {/* Top Tab Switcher */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border pb-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 border-b border-border pb-3">
         <button
           type="button"
           onClick={() => setActiveTab("logs")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all touch-target ${
+          className={`flex items-center justify-between sm:justify-start gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all touch-target ${
             activeTab === "logs"
               ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
               : "bg-card border border-border text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FileCheck className="w-4 h-4" />
-          <span>Treatment Log Regulatory Export</span>
+          <div className="flex items-center gap-2">
+            <FileCheck className="w-4 h-4 shrink-0" />
+            <span className="truncate">Treatment Log Regulatory Export</span>
+          </div>
           <span
-            className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+            className={`px-1.5 py-0.5 rounded-full text-[10px] shrink-0 ${
               activeTab === "logs" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
             }`}
           >
@@ -260,16 +262,18 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
         <button
           type="button"
           onClick={() => setActiveTab("chemicals")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all touch-target ${
+          className={`flex items-center justify-between sm:justify-start gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all touch-target ${
             activeTab === "chemicals"
               ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
               : "bg-card border border-border text-muted-foreground hover:text-foreground"
           }`}
         >
-          <FlaskConical className="w-4 h-4" />
-          <span>EPA Chemical & SDS Safety Library</span>
+          <div className="flex items-center gap-2">
+            <FlaskConical className="w-4 h-4 shrink-0" />
+            <span className="truncate">EPA Chemical & SDS Library</span>
+          </div>
           <span
-            className={`px-1.5 py-0.5 rounded-full text-[10px] ${
+            className={`px-1.5 py-0.5 rounded-full text-[10px] shrink-0 ${
               activeTab === "chemicals" ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"
             }`}
           >
@@ -332,15 +336,15 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
                 </div>
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2 border-t border-border">
                 <span className="text-xs text-muted-foreground font-semibold">
                   Showing {filteredLogs.length} matching treatment records
                 </span>
-                <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={handleExportCsv}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={handleExportCsv} className="flex-1 sm:flex-none">
                     <FileSpreadsheet className="w-4 h-4 mr-1.5 text-emerald-600" /> Export CSV
                   </Button>
-                  <Button size="sm" onClick={handleExportPdf}>
+                  <Button size="sm" onClick={handleExportPdf} className="flex-1 sm:flex-none font-bold">
                     <Download className="w-4 h-4 mr-1.5" /> Download PDF Report
                   </Button>
                 </div>
@@ -348,7 +352,7 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
             </CardContent>
           </Card>
 
-          {/* Compliance Records Table */}
+          {/* Compliance Records List / Table */}
           {filteredLogs.length === 0 ? (
             <Card className="p-12 text-center border-dashed">
               <FileCheck className="w-10 h-10 text-muted-foreground mx-auto mb-2" />
@@ -358,75 +362,119 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
               </p>
             </Card>
           ) : (
-            <div className="border border-border rounded-xl overflow-hidden bg-card shadow-sm">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-secondary/60 border-b border-border text-muted-foreground font-semibold">
-                    <tr>
-                      <th className="p-3">Date</th>
-                      <th className="p-3">Customer & Address</th>
-                      <th className="p-3">Pest Target</th>
-                      <th className="p-3">Chemical & EPA #</th>
-                      <th className="p-3">Quantity &amp; Areas</th>
-                      <th className="p-3">Applicator</th>
-                      <th className="p-3 text-right">Certificate &amp; QR</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {filteredLogs.map((log) => (
-                      <tr key={log.id} className="hover:bg-muted/30">
-                        <td className="p-3 font-semibold text-foreground whitespace-nowrap">
-                          {formatDate(log.createdAt)}
-                        </td>
-                        <td className="p-3">
-                          <span className="font-bold text-foreground block">
-                            {log.job.customer.firstName} {log.job.customer.lastName}
-                          </span>
-                          <span className="text-muted-foreground text-[11px]">
-                            {log.job.property.address}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <Badge variant="secondary" className="text-[10px]">
-                            {log.pestType}
-                          </Badge>
-                        </td>
-                        <td className="p-3">
-                          <span className="font-bold text-foreground block">{log.chemicalProduct}</span>
-                          <span className="text-[11px] font-mono text-muted-foreground">
-                            EPA Reg: {log.epaRegistrationNumber}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="font-medium text-foreground block">{log.quantity}</span>
-                          <span className="text-[11px] text-muted-foreground block truncate max-w-[200px]">
-                            {log.areasTreated}
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="font-semibold text-foreground block">
-                            {log.applicatorName || log.technician.name || "Technician"}
-                          </span>
-                          {log.licenseNumber && (
-                            <span className="text-[11px] text-muted-foreground">
-                              Lic: {log.licenseNumber}
-                            </span>
-                          )}
-                        </td>
-                        <td className="p-3 text-right whitespace-nowrap">
-                          <Link
-                            href={`/verify/${log.jobId || log.id}`}
-                            target="_blank"
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border text-xs font-semibold hover:bg-muted text-primary"
-                          >
-                            <QrCode className="w-3.5 h-3.5 text-emerald-600" />
-                            Verify Record
-                          </Link>
-                        </td>
+            <div className="space-y-3">
+              {/* Mobile Cards (Phone View) */}
+              <div className="space-y-3 md:hidden">
+                {filteredLogs.map((log) => (
+                  <Card key={log.id} className="p-4 border-border space-y-2.5 shadow-sm">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-bold text-foreground text-sm block">
+                          {log.job.customer.firstName} {log.job.customer.lastName}
+                        </span>
+                        <span className="text-xs text-muted-foreground block">
+                          {log.job.property.address}
+                        </span>
+                      </div>
+                      <Badge variant="secondary" className="text-[10px] shrink-0">
+                        {log.pestType}
+                      </Badge>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-secondary/50 space-y-1 text-xs">
+                      <p className="font-bold text-foreground">{log.chemicalProduct}</p>
+                      <p className="text-muted-foreground font-mono text-[11px]">EPA Reg #{log.epaRegistrationNumber}</p>
+                      <p className="text-muted-foreground">Applied: <strong className="text-foreground">{log.quantity}</strong> &bull; {log.areasTreated}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs pt-1">
+                      <div className="text-[11px] text-muted-foreground">
+                        <span>{formatDate(log.createdAt)}</span> &bull; <span>{log.applicatorName || log.technician?.name || "Tech"}</span>
+                      </div>
+                      <Link
+                        href={`/verify/${log.jobId || log.id}`}
+                        target="_blank"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-border text-xs font-bold hover:bg-muted text-primary"
+                      >
+                        <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                        Verify QR
+                      </Link>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table (Tablet / Desktop View) */}
+              <div className="hidden md:block border border-border rounded-xl overflow-hidden bg-card shadow-sm">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-secondary/60 border-b border-border text-muted-foreground font-semibold">
+                      <tr>
+                        <th className="p-3">Date</th>
+                        <th className="p-3">Customer & Address</th>
+                        <th className="p-3">Pest Target</th>
+                        <th className="p-3">Chemical & EPA #</th>
+                        <th className="p-3">Quantity &amp; Areas</th>
+                        <th className="p-3">Applicator</th>
+                        <th className="p-3 text-right">Certificate &amp; QR</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {filteredLogs.map((log) => (
+                        <tr key={log.id} className="hover:bg-muted/30">
+                          <td className="p-3 font-semibold text-foreground whitespace-nowrap">
+                            {formatDate(log.createdAt)}
+                          </td>
+                          <td className="p-3">
+                            <span className="font-bold text-foreground block">
+                              {log.job.customer.firstName} {log.job.customer.lastName}
+                            </span>
+                            <span className="text-muted-foreground text-[11px]">
+                              {log.job.property.address}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <Badge variant="secondary" className="text-[10px]">
+                              {log.pestType}
+                            </Badge>
+                          </td>
+                          <td className="p-3">
+                            <span className="font-bold text-foreground block">{log.chemicalProduct}</span>
+                            <span className="text-[11px] font-mono text-muted-foreground">
+                              EPA Reg: {log.epaRegistrationNumber}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className="font-medium text-foreground block">{log.quantity}</span>
+                            <span className="text-[11px] text-muted-foreground block truncate max-w-[200px]">
+                              {log.areasTreated}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className="font-semibold text-foreground block">
+                              {log.applicatorName || log.technician.name || "Technician"}
+                            </span>
+                            {log.licenseNumber && (
+                              <span className="text-[11px] text-muted-foreground">
+                                Lic: {log.licenseNumber}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3 text-right whitespace-nowrap">
+                            <Link
+                              href={`/verify/${log.jobId || log.id}`}
+                              target="_blank"
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border text-xs font-semibold hover:bg-muted text-primary"
+                            >
+                              <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                              Verify Record
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}

@@ -174,11 +174,11 @@ export function QuoteBuilderClient({
   return (
     <div className="space-y-4">
       {/* Top action bar */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <span className="text-sm text-muted-foreground font-semibold">
           {quotes.length} {quotes.length === 1 ? "Quote" : "Quotes"} total
         </span>
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => setIsCreateOpen(true)} className="w-full sm:w-auto font-bold">
           <Plus className="w-4 h-4 mr-1.5" />
           Create Quote
         </Button>
@@ -397,9 +397,9 @@ export function QuoteBuilderClient({
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 w-32">
-                    <span>Qty:</span>
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1.5 sm:w-28">
+                    <span className="text-[11px] text-muted-foreground font-semibold">Qty:</span>
                     <Input
                       type="number"
                       min="1"
@@ -412,7 +412,7 @@ export function QuoteBuilderClient({
                   </div>
 
                   <div className="flex items-center gap-1.5 flex-1">
-                    <span>Unit Price ($):</span>
+                    <span className="text-[11px] text-muted-foreground font-semibold">Price ($):</span>
                     <Input
                       type="number"
                       step="0.01"
@@ -420,7 +420,7 @@ export function QuoteBuilderClient({
                       value={(item.unitPriceCents / 100).toFixed(2)}
                       onChange={(e) =>
                         updateLineItem(
-                          index,
+                           index,
                           "unitPriceCents",
                           Math.round(Number(e.target.value) * 100)
                         )
@@ -429,7 +429,7 @@ export function QuoteBuilderClient({
                     />
                   </div>
 
-                  <div className="text-right font-bold text-foreground min-w-[80px]">
+                  <div className="col-span-2 sm:col-span-1 text-right font-bold text-foreground text-xs sm:min-w-[80px] pt-1 sm:pt-0">
                     {formatMoney(item.quantity * item.unitPriceCents, currency)}
                   </div>
                 </div>

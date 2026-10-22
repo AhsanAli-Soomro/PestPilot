@@ -356,16 +356,16 @@ export function MobileTodayClient({
             {completedCount} / {jobs.length} Complete
           </span>
         </div>
-        <div className="flex items-center justify-between text-xs text-primary-foreground/90 pt-0.5">
-          <p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-primary-foreground/90 pt-0.5 gap-2">
+          <p className="truncate">
             Technician: <strong>{userName}</strong> &bull; Offline active
           </p>
           <button
             type="button"
             onClick={() => setIsInstallModalOpen(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] transition-all shadow-sm"
+            className="self-start sm:self-auto inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] transition-all shadow-sm"
           >
-            <Download className="w-3.5 h-3.5" /> Install App / APK
+            <Download className="w-3.5 h-3.5 shrink-0" /> Install App / APK
           </button>
         </div>
 
@@ -506,25 +506,25 @@ export function MobileTodayClient({
                   </div>
 
                   {/* Primary One-Tap Actions for Drivers / Technicians */}
-                  <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1">
                     <a
                       href={`https://maps.google.com/?q=${encodeURIComponent(
                         `${property?.address || ""}, ${property?.city || ""}, ${property?.state || ""} ${property?.postalCode || ""}`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
+                      className="flex items-center justify-center gap-1 sm:gap-1.5 h-11 px-1 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-[11px] sm:text-xs border border-border touch-target transition-all"
                     >
-                      <Navigation className="w-3.5 h-3.5 text-primary" />
-                      Navigate
+                      <Navigation className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate">Navigate</span>
                     </a>
 
                     <a
                       href={customer?.phone ? `tel:${customer.phone}` : "#"}
-                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
+                      className="flex items-center justify-center gap-1 sm:gap-1.5 h-11 px-1 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-[11px] sm:text-xs border border-border touch-target transition-all"
                     >
-                      <Phone className="w-3.5 h-3.5 text-primary" />
-                      Call
+                      <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="truncate">Call</span>
                     </a>
 
                     <a
@@ -533,10 +533,10 @@ export function MobileTodayClient({
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs touch-target transition-all"
+                      className="flex items-center justify-center gap-1 sm:gap-1.5 h-11 px-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] sm:text-xs touch-target transition-all"
                     >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      WhatsApp
+                      <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">WhatsApp</span>
                     </a>
                   </div>
 
@@ -913,18 +913,19 @@ export function MobileTodayClient({
               )}
             </div>
 
-            <div className="pt-3 flex justify-end gap-2 border-t border-border">
+            <div className="pt-3 flex flex-col-reverse sm:flex-row justify-end gap-2 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setActiveJobForLog(null)}
                 disabled={loadingActionId === "log_submit"}
+                className="w-full sm:w-auto"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
-                className="font-bold h-11"
+                className="font-bold h-11 w-full sm:w-auto"
                 disabled={loadingActionId === "log_submit"}
               >
                 {loadingActionId === "log_submit" ? (

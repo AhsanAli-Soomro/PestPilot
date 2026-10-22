@@ -183,10 +183,10 @@ export function SettingsClient({
   return (
     <div className="space-y-6">
       {/* Settings Navigation Tabs */}
-      <div className="flex border-b border-border space-x-4 sm:space-x-6 overflow-x-auto scrollbar-none flex-nowrap pb-1">
+      <div className="flex border-b border-border space-x-4 sm:space-x-6 overflow-x-auto no-scrollbar scrollbar-none flex-nowrap pb-1 touch-pan-x">
         <button
           onClick={() => setActiveTab("company")}
-          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "company"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -196,7 +196,7 @@ export function SettingsClient({
         </button>
         <button
           onClick={() => setActiveTab("team")}
-          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "team"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -206,7 +206,7 @@ export function SettingsClient({
         </button>
         <button
           onClick={() => setActiveTab("billing")}
-          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "billing"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -216,7 +216,7 @@ export function SettingsClient({
         </button>
         <button
           onClick={() => setActiveTab("conflicts")}
-          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "conflicts"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -226,7 +226,7 @@ export function SettingsClient({
         </button>
         <button
           onClick={() => setActiveTab("audit")}
-          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "audit"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -404,11 +404,11 @@ export function SettingsClient({
             </div>
 
             {currentTier === "FREE" && members.length >= 1 ? (
-              <Button size="sm" onClick={() => setActiveTab("billing")}>
+              <Button size="sm" onClick={() => setActiveTab("billing")} className="w-full sm:w-auto font-bold">
                 Upgrade Plan to Add Users
               </Button>
             ) : (
-              <Button size="sm" onClick={() => setInviteModalOpen(true)}>
+              <Button size="sm" onClick={() => setInviteModalOpen(true)} className="w-full sm:w-auto font-bold">
                 <Users className="w-4 h-4 mr-1.5" /> Invite Member
               </Button>
             )}
@@ -503,16 +503,17 @@ export function SettingsClient({
                 </select>
               </div>
 
-              <div className="pt-3 flex justify-end gap-2 border-t border-border">
+              <div className="pt-3 flex flex-col-reverse sm:flex-row justify-end gap-2 border-t border-border">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setInviteModalOpen(false)}
                   disabled={loading}
+                  className="w-full sm:w-auto"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading || (currentTier === "FREE" && members.length >= 1)}>
+                <Button type="submit" disabled={loading || (currentTier === "FREE" && members.length >= 1)} className="w-full sm:w-auto font-bold">
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Invite"}
                 </Button>
               </div>

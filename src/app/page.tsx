@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { PriceCalculator } from "@/components/price-calculator";
 import { AiPestIdentifier } from "@/components/ai-pest-identifier";
 import { FreeToolsHub } from "@/components/free-tools-hub";
+import { NativeAppRedirect } from "@/components/native-app-redirect";
 import {
   ShieldCheck,
   Truck,
@@ -27,6 +28,7 @@ import {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col justify-between selection:bg-primary/20 selection:text-primary">
+      <NativeAppRedirect />
       {/* Navigation */}
       <header className="sticky top-0 z-40 border-b border-border bg-card/85 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

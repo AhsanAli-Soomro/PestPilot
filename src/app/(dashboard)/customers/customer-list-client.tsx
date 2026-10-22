@@ -165,7 +165,7 @@ export function CustomerListClient({
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {allTags.length > 0 && (
             <select
               value={tagFilter}
@@ -181,7 +181,7 @@ export function CustomerListClient({
             </select>
           )}
 
-          <Button onClick={() => setIsAddModalOpen(true)}>
+          <Button onClick={() => setIsAddModalOpen(true)} className="flex-1 sm:flex-none font-bold">
             <Plus className="w-4 h-4 mr-1.5" />
             Add Customer
           </Button>
@@ -312,7 +312,7 @@ export function CustomerListClient({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="email">Email *</Label>
               <Input
@@ -362,7 +362,7 @@ export function CustomerListClient({
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 <Input
                   placeholder="City"
                   value={city}
@@ -380,7 +380,7 @@ export function CustomerListClient({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <Input
                   placeholder="Gate code (e.g. #4921)"
                   value={gateCode}
@@ -395,16 +395,17 @@ export function CustomerListClient({
             </div>
           </div>
 
-          <div className="pt-3 flex justify-end gap-2 border-t border-border">
+          <div className="pt-3 flex flex-col-reverse sm:flex-row justify-end gap-2 border-t border-border">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsAddModalOpen(false)}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto font-bold">
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...

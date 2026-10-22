@@ -4,7 +4,7 @@
   "webDir": "public",
   "bundledWebRuntime": false,
   "server": {
-    "url": "https://pestpilots.vercel.app",
+    "url": "https://pestpilots.vercel.app/login",
     "cleartext": true
   },
   "android": {

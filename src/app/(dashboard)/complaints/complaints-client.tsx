@@ -150,7 +150,7 @@ export function ComplaintsClient() {
           />
         </div>
 
-        <Button onClick={() => setIsNewModalOpen(true)} className="font-bold">
+        <Button onClick={() => setIsNewModalOpen(true)} className="font-bold w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-1.5" /> Log Complaint / Callback
         </Button>
       </div>

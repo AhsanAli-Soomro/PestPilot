@@ -237,20 +237,20 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full md:w-auto">
             <a
               href={`https://api.whatsapp.com/send?phone=${(org.phone || "").replace(/[^0-9]/g, "")}&text=${encodeURIComponent(
                 `Hello ${org.name || "PestPilot"}, I am customer ${customer.firstName} ${customer.lastName} inquiring about my pest service account.`
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
             >
               <MessageSquare className="w-4 h-4" />
               WhatsApp Support
             </a>
 
-            <Button size="sm" onClick={() => setIsBookModalOpen(true)} className="font-bold">
+            <Button size="sm" onClick={() => setIsBookModalOpen(true)} className="flex-1 sm:flex-none font-bold">
               <Plus className="w-4 h-4 mr-1.5" /> Book Service
             </Button>
           </div>
@@ -258,7 +258,7 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
       </Card>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-border overflow-x-auto scrollbar-none flex-nowrap gap-3 sm:gap-4 pb-1">
+      <div className="flex border-b border-border overflow-x-auto no-scrollbar scrollbar-none flex-nowrap gap-3 sm:gap-4 pb-1 touch-pan-x">
         {[
           { id: "appointments", label: "Appointments", badge: upcomingJobs.length },
           { id: "history", label: "Treatment History & Certificates" },
@@ -270,7 +270,7 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`pb-3 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+            className={`pb-3 text-xs sm:text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 flex items-center gap-1.5 ${
               activeTab === tab.id
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"

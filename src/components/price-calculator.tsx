@@ -112,7 +112,7 @@ export function PriceCalculator({ onBookPlan }: PriceCalculatorProps) {
         {/* Step 3: Infestation Severity */}
         <div className="space-y-1.5">
           <label className="text-xs font-bold text-foreground">3. Infestation Level</label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {SEVERITY_LEVELS.map((v) => (
               <button
                 key={v.id}

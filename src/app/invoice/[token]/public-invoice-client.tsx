@@ -174,7 +174,8 @@ export function PublicInvoiceClient({ invoice, paymentSuccess }: PublicInvoiceCl
                 Services & Applications
               </h3>
               <div className="border border-border rounded-xl overflow-hidden">
-                <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
                   <thead className="bg-secondary/60 border-b border-border text-muted-foreground font-semibold">
                     <tr>
                       <th className="p-3">Service Description</th>
@@ -198,6 +199,7 @@ export function PublicInvoiceClient({ invoice, paymentSuccess }: PublicInvoiceCl
                 </table>
               </div>
             </div>
+          </div>
 
             {/* Summary */}
             <div className="flex justify-end pt-2">

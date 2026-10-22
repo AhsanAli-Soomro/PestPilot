@@ -37,7 +37,7 @@ export function SyncStatusBadge() {
             ? "Offline: changes are saved locally and will sync when reconnected"
             : `Status: ${status}. Click to sync now.`
         }
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all touch-target focus:outline-none"
+        className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold border transition-all touch-target focus:outline-none shrink-0"
         style={{
           backgroundColor:
             status === "offline"

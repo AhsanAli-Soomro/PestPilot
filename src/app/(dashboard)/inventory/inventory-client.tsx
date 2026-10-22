@@ -197,7 +197,7 @@ export function InventoryClient() {
           />
         </div>
 
-        <Button onClick={() => setIsAddModalOpen(true)} className="font-bold">
+        <Button onClick={() => setIsAddModalOpen(true)} className="font-bold w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-1.5" /> Log New Chemical Batch
         </Button>
       </div>

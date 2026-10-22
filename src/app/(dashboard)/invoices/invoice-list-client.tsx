@@ -211,10 +211,10 @@ export function InvoiceListClient({
     <div className="space-y-4">
       {/* Action and Filter Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-border p-1 bg-card">
+        <div className="inline-flex rounded-lg border border-border p-1 bg-card overflow-x-auto no-scrollbar max-w-full">
           <button
             onClick={() => setFilter("ALL")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
               filter === "ALL"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -224,7 +224,7 @@ export function InvoiceListClient({
           </button>
           <button
             onClick={() => setFilter("UNPAID")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
               filter === "UNPAID"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -234,7 +234,7 @@ export function InvoiceListClient({
           </button>
           <button
             onClick={() => setFilter("PAID")}
-            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+            className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
               filter === "PAID"
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-foreground"
@@ -244,7 +244,7 @@ export function InvoiceListClient({
           </button>
         </div>
 
-        <Button onClick={() => setIsCreateOpen(true)}>
+        <Button onClick={() => setIsCreateOpen(true)} className="w-full sm:w-auto font-bold">
           <Plus className="w-4 h-4 mr-1.5" />
           Create Invoice
         </Button>
@@ -573,9 +573,9 @@ export function InvoiceListClient({
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 w-32">
-                    <span>Qty:</span>
+                <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3">
+                  <div className="flex items-center gap-1.5 sm:w-28">
+                    <span className="text-[11px] text-muted-foreground font-semibold">Qty:</span>
                     <Input
                       type="number"
                       min="1"
@@ -591,7 +591,7 @@ export function InvoiceListClient({
                   </div>
 
                   <div className="flex items-center gap-1.5 flex-1">
-                    <span>Rate ($):</span>
+                    <span className="text-[11px] text-muted-foreground font-semibold">Rate ($):</span>
                     <Input
                       type="number"
                       step="0.01"
@@ -607,7 +607,7 @@ export function InvoiceListClient({
                     />
                   </div>
 
-                  <div className="text-right font-bold text-foreground min-w-[80px]">
+                  <div className="col-span-2 sm:col-span-1 text-right font-bold text-foreground text-xs sm:min-w-[80px] pt-1 sm:pt-0">
                     {formatMoney(item.quantity * item.unitPriceCents, currency)}
                   </div>
                 </div>

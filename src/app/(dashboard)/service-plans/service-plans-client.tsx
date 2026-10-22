@@ -96,11 +96,11 @@ export function ServicePlansClient({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <span className="text-sm font-semibold text-muted-foreground">
           {plans.length} active recurring plans
         </span>
-        <Button onClick={() => setIsNewPlanOpen(true)}>
+        <Button onClick={() => setIsNewPlanOpen(true)} className="w-full sm:w-auto font-bold">
           <Plus className="w-4 h-4 mr-1.5" />
           Create Service Plan
         </Button>

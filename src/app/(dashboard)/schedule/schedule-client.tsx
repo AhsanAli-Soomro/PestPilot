@@ -164,11 +164,11 @@ export function ScheduleClient({
     <div className="space-y-4">
       {/* View Switcher & Action Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex rounded-lg border border-border p-1 bg-card">
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <div className="inline-flex rounded-lg border border-border p-1 bg-card overflow-x-auto no-scrollbar max-w-full">
             <button
               onClick={() => setViewMode("list")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
                 viewMode === "list"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -178,7 +178,7 @@ export function ScheduleClient({
             </button>
             <button
               onClick={() => setViewMode("day")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
                 viewMode === "day"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -188,7 +188,7 @@ export function ScheduleClient({
             </button>
             <button
               onClick={() => setViewMode("week")}
-              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-colors shrink-0 whitespace-nowrap ${
                 viewMode === "week"
                   ? "bg-primary text-primary-foreground"
                   : "text-muted-foreground hover:text-foreground"

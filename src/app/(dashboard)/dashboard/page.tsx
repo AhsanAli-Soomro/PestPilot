@@ -126,14 +126,14 @@ export default async function DashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link href="/mobile/today">
-            <Button variant="accent" className="font-bold">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+          <Link href="/mobile/today" className="flex-1 sm:flex-none">
+            <Button variant="accent" className="font-bold w-full sm:w-auto">
               <Truck className="w-4 h-4 mr-2" /> Field Mode (Today)
             </Button>
           </Link>
-          <Link href="/schedule">
-            <Button>
+          <Link href="/schedule" className="flex-1 sm:flex-none">
+            <Button className="w-full sm:w-auto">
               <Calendar className="w-4 h-4 mr-2" /> Dispatch Schedule
             </Button>
           </Link>

@@ -61,12 +61,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4 bg-muted/30">
+    <div className="min-h-screen flex flex-col justify-center items-center py-8 px-3 sm:px-4 bg-muted/30">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-md space-y-5 sm:space-y-6">
         <div className="text-center space-y-2">
           <Link href="/" className="inline-flex items-center gap-2">
             <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/25">
@@ -76,19 +76,19 @@ export default function SignupPage() {
               Pest<span className="text-amber-500">Pilot</span>
             </span>
           </Link>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Field-service software built for 1 to 5 truck pest control teams
           </p>
         </div>
 
-        <Card className="border-border shadow-xl">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-xl">Create your account</CardTitle>
-            <CardDescription>Get started in less than 3 minutes. No credit card required.</CardDescription>
+        <Card className="border-border shadow-xl overflow-hidden">
+          <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
+            <CardTitle className="text-lg sm:text-xl">Create your account</CardTitle>
+            <CardDescription className="text-xs">Get started in less than 3 minutes. No credit card required.</CardDescription>
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
               <div className="space-y-2">
                 <Label htmlFor="name">Your Name</Label>
                 <Input
@@ -139,7 +139,7 @@ export default function SignupPage() {
             </CardContent>
           </form>
 
-          <CardFooter className="flex justify-center border-t border-border pt-4">
+          <CardFooter className="flex justify-center border-t border-border p-4 text-center">
             <p className="text-xs text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="font-semibold text-primary hover:underline">

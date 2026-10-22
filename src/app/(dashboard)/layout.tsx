@@ -35,7 +35,7 @@ export default async function DashboardLayout({
           role={user.role}
           isSuperAdmin={isSuper}
         />
-        <main className="flex-1 p-4 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
+        <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto">
           {children}
         </main>
       </div>

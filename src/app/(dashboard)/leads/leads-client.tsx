@@ -158,7 +158,7 @@ export function LeadsClient({ customers, currency }: LeadsClientProps) {
           />
         </div>
 
-        <Button onClick={() => setIsNewLeadOpen(true)} className="font-bold">
+        <Button onClick={() => setIsNewLeadOpen(true)} className="font-bold w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-1.5" /> Add Lead
         </Button>
       </div>

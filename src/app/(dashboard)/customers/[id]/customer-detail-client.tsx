@@ -155,16 +155,17 @@ export function CustomerDetailClient({ customer, currency }: CustomerDetailClien
               )}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsEditModalOpen(true)}
+                className="w-full sm:w-auto"
               >
                 <Edit className="w-4 h-4 mr-1.5" /> Edit Customer
               </Button>
-              <Link href={`/quotes?newQuote=true&customerId=${customer.id}`}>
-                <Button size="sm">
+              <Link href={`/quotes?newQuote=true&customerId=${customer.id}`} className="w-full sm:w-auto">
+                <Button size="sm" className="w-full sm:w-auto">
                   <FileSpreadsheet className="w-4 h-4 mr-1.5" /> New Quote
                 </Button>
               </Link>
@@ -193,10 +194,10 @@ export function CustomerDetailClient({ customer, currency }: CustomerDetailClien
       </Card>
 
       {/* Tabs */}
-      <div className="flex border-b border-border space-x-4">
+      <div className="flex border-b border-border space-x-4 sm:space-x-6 overflow-x-auto no-scrollbar scrollbar-none flex-nowrap pb-1">
         <button
           onClick={() => setActiveTab("properties")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "properties"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -206,7 +207,7 @@ export function CustomerDetailClient({ customer, currency }: CustomerDetailClien
         </button>
         <button
           onClick={() => setActiveTab("jobs")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "jobs"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -216,7 +217,7 @@ export function CustomerDetailClient({ customer, currency }: CustomerDetailClien
         </button>
         <button
           onClick={() => setActiveTab("quotes")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "quotes"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"
@@ -226,7 +227,7 @@ export function CustomerDetailClient({ customer, currency }: CustomerDetailClien
         </button>
         <button
           onClick={() => setActiveTab("invoices")}
-          className={`pb-3 text-sm font-bold border-b-2 transition-colors ${
+          className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors shrink-0 ${
             activeTab === "invoices"
               ? "border-primary text-primary"
               : "border-transparent text-muted-foreground hover:text-foreground"

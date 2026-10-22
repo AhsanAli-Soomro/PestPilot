@@ -11,28 +11,42 @@ interface SignaturePadProps {
   height?: number;
 }
 
-export function SignaturePad({ onSave, onClear, width = 360, height = 160 }: SignaturePadProps) {
+export function SignaturePad({ onSave, onClear, height = 150 }: SignaturePadProps) {
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
   const [isDrawing, setIsDrawing] = React.useState(false);
   const [hasSignature, setHasSignature] = React.useState(false);
 
-  React.useEffect(() => {
+  const initCanvas = React.useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // High DPI scaling
+    const w = container.clientWidth || 320;
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
+    canvas.width = w * dpr;
     canvas.height = height * dpr;
+    canvas.style.width = `${w}px`;
+    canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
     ctx.strokeStyle = "#1b4332";
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-  }, [width, height]);
+  }, [height]);
+
+  React.useEffect(() => {
+    initCanvas();
+    const handleResize = () => {
+      // Don't wipe existing signature on simple resize if possible, or re-init
+      initCanvas();
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [initCanvas]);
 
   const getCoordinates = (e: React.MouseEvent | React.TouchEvent) => {
     const canvas = canvasRef.current;
@@ -89,7 +103,8 @@ export function SignaturePad({ onSave, onClear, width = 360, height = 160 }: Sig
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -100,11 +115,13 @@ export function SignaturePad({ onSave, onClear, width = 360, height = 160 }: Sig
   };
 
   return (
-    <div className="space-y-2">
-      <div className="border-2 border-dashed border-border rounded-xl overflow-hidden bg-card relative shadow-inner">
+    <div className="space-y-2 w-full">
+      <div
+        ref={containerRef}
+        className="border-2 border-dashed border-border rounded-xl overflow-hidden bg-card relative shadow-inner w-full touch-none"
+      >
         <canvas
           ref={canvasRef}
-          style={{ width: `${width}px`, height: `${height}px` }}
           className="touch-none cursor-crosshair w-full block"
           onMouseDown={startDrawing}
           onMouseMove={draw}
@@ -115,7 +132,7 @@ export function SignaturePad({ onSave, onClear, width = 360, height = 160 }: Sig
           onTouchEnd={stopDrawing}
         />
         {!hasSignature && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-muted-foreground/40 text-xs font-semibold uppercase tracking-wider">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-muted-foreground/40 text-xs font-semibold uppercase tracking-wider select-none px-4 text-center">
             Sign here with finger or stylus
           </div>
         )}
@@ -138,4 +155,3 @@ export function SignaturePad({ onSave, onClear, width = 360, height = 160 }: Sig
     </div>
   );
 }
-
