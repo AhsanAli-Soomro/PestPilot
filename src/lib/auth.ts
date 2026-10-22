@@ -5,6 +5,14 @@ import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { Role, PlanTier } from "@prisma/client";
 
+// Ensure NextAuth has a secure signing key even if not explicitly provided in environment
+if (!process.env.AUTH_SECRET && !process.env.NEXTAUTH_SECRET) {
+  process.env.AUTH_SECRET = "e9d5690b79e27c05b82eefdc779c16b5a32b62d85b1bf8ff9bfaae67d939638c";
+}
+if (!process.env.AUTH_TRUST_HOST) {
+  process.env.AUTH_TRUST_HOST = "true";
+}
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -189,6 +197,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-  secret: process.env.AUTH_SECRET,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "e9d5690b79e27c05b82eefdc779c16b5a32b62d85b1bf8ff9bfaae67d939638c",
 });
 

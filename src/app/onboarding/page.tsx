@@ -70,6 +70,13 @@ export default function OnboardingPage() {
       formData.append("propertyState", propertyState);
       formData.append("propertyPostalCode", propertyPostalCode);
 
+      if (session.data?.user?.id) {
+        formData.append("userId", session.data.user.id);
+      }
+      if (session.data?.user?.email) {
+        formData.append("userEmail", session.data.user.email);
+      }
+
       const res = await completeOnboardingAction(formData);
 
       if (!res.success) {

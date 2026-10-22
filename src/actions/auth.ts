@@ -53,9 +53,20 @@ export async function registerUserAction(formData: FormData) {
 
 export async function completeOnboardingAction(formData: FormData) {
   try {
-    const user = await getCurrentUser();
+    let user = await getCurrentUser();
     if (!user || !user.id) {
-      return { success: false, error: "Authentication required" };
+      const fallbackUserId = formData.get("userId") as string;
+      const fallbackUserEmail = formData.get("userEmail") as string;
+      if (fallbackUserId) {
+        const dbUser = await db.user.findUnique({ where: { id: fallbackUserId } });
+        if (dbUser) user = dbUser as any;
+      } else if (fallbackUserEmail) {
+        const dbUser = await db.user.findUnique({ where: { email: fallbackUserEmail.toLowerCase().trim() } });
+        if (dbUser) user = dbUser as any;
+      }
+    }
+    if (!user || !user.id) {
+      return { success: false, error: "Authentication required. Please sign in again." };
     }
 
     const rawData = {

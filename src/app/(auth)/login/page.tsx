@@ -33,8 +33,7 @@ export default function LoginPage() {
         toast.error("Invalid email or password. Please try again.");
       } else {
         toast.success("Welcome back to PestPilot!");
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } catch {
       toast.error("An unexpected error occurred during login.");
@@ -57,8 +56,7 @@ export default function LoginPage() {
         toast.error("Demo login error: Seed database first or sign up.");
       } else {
         toast.success("Signed in with demo account!");
-        router.push("/dashboard");
-        router.refresh();
+        window.location.href = "/dashboard";
       }
     } finally {
       setLoading(false);

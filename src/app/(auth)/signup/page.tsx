@@ -49,9 +49,9 @@ export default function SignupPage() {
 
       if (signInRes?.error) {
         toast.error("Account created, please sign in.");
-        router.push("/login");
+        window.location.href = "/login";
       } else {
-        router.push("/onboarding");
+        window.location.href = "/onboarding";
       }
     } catch {
       toast.error("An error occurred during signup.");
