@@ -1,3 +1,4 @@
+import nodemailer, { type Transporter } from "nodemailer";
 import { Resend } from "resend";
 
 export interface EmailPayload {
@@ -13,41 +14,109 @@ export interface SmsPayload {
   message: string;
 }
 
-// Resend Email Adapter
-const resendApiKey = process.env.RESEND_API_KEY;
-const resend = resendApiKey ? new Resend(resendApiKey) : null;
-const fromEmail = process.env.EMAIL_FROM || "PestPilot <notifications@pestpilot.app>";
+// ------------------------------------------------------------------------------
+// 1. Nodemailer SMTP Adapter (Free - Works with Gmail App Passwords & standard SMTP)
+// ------------------------------------------------------------------------------
+const smtpHost = process.env.SMTP_HOST;
+const smtpPort = process.env.SMTP_PORT ? Number(process.env.SMTP_PORT) : 587;
+const smtpUser = process.env.SMTP_USER || process.env.GMAIL_USER;
+const smtpPass = process.env.SMTP_PASS || process.env.GMAIL_PASS || process.env.GMAIL_APP_PASSWORD;
+const smtpSecure = process.env.SMTP_SECURE === "true" || smtpPort === 465;
 
-export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; id?: string; error?: string }> {
-  if (!resend) {
-    console.info(`[Notification Adapter: Email Disabled] To: ${payload.to} | Subject: ${payload.subject}`);
-    return { success: true, id: "simulated-email-id" };
-  }
+let nodemailerTransporter: Transporter | null = null;
 
-  try {
-    const { data, error } = await resend.emails.send({
-      from: fromEmail,
-      to: [payload.to],
-      subject: payload.subject,
-      html: payload.html,
-      text: payload.text,
-      replyTo: payload.replyTo,
+if (smtpUser && smtpPass) {
+  if (process.env.GMAIL_USER || (smtpHost && smtpHost.includes("gmail"))) {
+    // Zero-config Gmail transport
+    nodemailerTransporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
     });
-
-    if (error) {
-      console.error("[Resend Error]:", error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: true, id: data?.id };
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Failed to send email";
-    console.error("[Email Exception]:", err);
-    return { success: false, error: message };
+  } else if (smtpHost) {
+    // Standard custom SMTP transport (Brevo, SendGrid, Amazon SES, Mailgun, etc.)
+    nodemailerTransporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpSecure,
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+    });
   }
 }
 
-// Twilio SMS Adapter (Behind an adapter interface, disabled if keys missing)
+// ------------------------------------------------------------------------------
+// 2. Resend API Adapter (Requires custom verified domain)
+// ------------------------------------------------------------------------------
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
+const fromEmail =
+  process.env.EMAIL_FROM ||
+  (smtpUser ? `PestPilot <${smtpUser}>` : "PestPilot <notifications@pestpilot.app>");
+
+/**
+ * Universal email sender:
+ * 1. Checks Nodemailer (SMTP / Gmail) first (free, no domain verification needed)
+ * 2. Fallbacks to Resend if configured
+ * 3. Fallbacks to simulation logging in dev if neither is set
+ */
+export async function sendEmail(payload: EmailPayload): Promise<{ success: boolean; id?: string; error?: string }> {
+  // Option 1: Nodemailer (SMTP / Gmail)
+  if (nodemailerTransporter) {
+    try {
+      const info = await nodemailerTransporter.sendMail({
+        from: fromEmail,
+        to: payload.to,
+        subject: payload.subject,
+        html: payload.html,
+        text: payload.text,
+        replyTo: payload.replyTo,
+      });
+      return { success: true, id: info.messageId };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send email via SMTP";
+      console.error("[Nodemailer Error]:", err);
+      return { success: false, error: message };
+    }
+  }
+
+  // Option 2: Resend API
+  if (resend) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: fromEmail,
+        to: [payload.to],
+        subject: payload.subject,
+        html: payload.html,
+        text: payload.text,
+        replyTo: payload.replyTo,
+      });
+
+      if (error) {
+        console.error("[Resend Error]:", error);
+        return { success: false, error: error.message };
+      }
+
+      return { success: true, id: data?.id };
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to send email via Resend";
+      console.error("[Resend Exception]:", err);
+      return { success: false, error: message };
+    }
+  }
+
+  // Fallback: Safe simulation in development logs
+  console.info(`[Notification Adapter: Email Simulation (Set GMAIL_USER/GMAIL_PASS or SMTP_USER/SMTP_PASS in .env to send real emails)] To: ${payload.to} | Subject: ${payload.subject}`);
+  return { success: true, id: "simulated-email-id" };
+}
+
+// ------------------------------------------------------------------------------
+// 3. Twilio SMS Adapter (Behind an adapter interface, disabled if keys missing)
+// ------------------------------------------------------------------------------
 const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID;
 const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
@@ -89,4 +158,3 @@ export async function sendSms(payload: SmsPayload): Promise<{ success: boolean; 
     return { success: false, error: message };
   }
 }
-

@@ -167,20 +167,43 @@ To test subscription upgrades and card checkout locally:
 
 ---
 
-### 6. Email Notifications (Resend)
-PestPilot uses Resend to send quotes and payment links.
+### 6. Email Notifications (Nodemailer or Resend)
 
+PestPilot supports two email delivery adapters:
+1. **Nodemailer via Gmail / SMTP (100% Free & No Custom Domain Required)**
+2. **Resend API (Requires custom verified domain with DNS access)**
+
+---
+
+#### Option A: Nodemailer via Gmail (Recommended - 100% Free, Zero Domain Needed)
+Send real client emails (quotes, invoices, reminders) straight from your standard Gmail account for $0:
+
+1. Open your Google Account: [https://myaccount.google.com/security](https://myaccount.google.com/security)
+2. Ensure **2-Step Verification** is turned **ON**.
+3. Open the App Passwords page: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
+4. App name: type `PestPilot` and click **Create**.
+5. Google will generate a 16-character password (e.g., `abcd efgh ijkl mnop`).
+6. Copy that 16-character code and paste into your `.env` (or Vercel Environment Variables):
+   ```env
+   GMAIL_USER="your-email@gmail.com"
+   GMAIL_PASS="abcdefghijklmnop"
+   ```
+7. Done! Real quotes, invoices, and reminders will now be delivered via Gmail with zero configuration or domain fees!
+
+---
+
+#### Option B: Resend API (Alternative if you own a verified domain)
 1. Go to [https://resend.com](https://resend.com) and create an account.
-2. In the sidebar, click **API Keys** → **Create API Key**.
-3. Name it `PestPilot` and give it **Full Access**.
-4. Copy the key (starts with `re_...`).
+2. Add your custom domain and verify DNS records (SPF/DKIM).
+3. In the sidebar, click **API Keys** → **Create API Key**.
+4. Name it `PestPilot` and copy the key (`re_...`).
 5. Paste into `.env`:
    ```env
    RESEND_API_KEY="re_xxxxxxxxxxxxxx"
    EMAIL_FROM="notifications@yourdomain.com"
    ```
-   *(In development, if you haven't verified a custom domain yet, you can use Resend's test sender: `EMAIL_FROM="onboarding@resend.dev"`).*
-   *(If `RESEND_API_KEY` is left blank, PestPilot automatically simulates emails in your console logs without errors).*
+
+*(Note: If neither is configured, PestPilot automatically runs in simulation mode, logging emails safely to your console with zero crashes).*
 
 ---
 
