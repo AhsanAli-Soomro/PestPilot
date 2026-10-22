@@ -37,27 +37,24 @@ PestPilot includes a `docker-compose.yml` file for zero-config local PostgreSQL.
 
 ---
 
-### 2. Production Database (Neon or Supabase)
+### 2. Production Database (Neon Hosted PostgreSQL)
 
-#### Option A: Neon (Recommended for Serverless Postgres)
-1. Go to [https://neon.tech](https://neon.tech) and sign up / log in.
-2. Click **"New Project"**, name it `pestpilot-production`, and click **Create Project**.
-3. On the project dashboard, find the **Connection Details** card.
-4. Select **"Prisma"** or **"Connection string"** with pooled connection enabled.
-5. Copy the connection string:
-   ```text
-   postgresql://username:password@ep-cool-fog-123456.us-east-2.aws.neon.tech/neondb?sslmode=require
-   ```
-6. Paste into your production environment variable:
-   ```env
-   DATABASE_URL="postgresql://pestpilot:pestpilot_password@localhost:5432/pestpilot_db"
-   ```
+Your live Neon PostgreSQL instance is pre-configured and connected:
 
-#### Option B: Supabase
-1. Go to [https://supabase.com](https://supabase.com) and click **"New Project"**.
-2. Under **Project Settings** → **Database**, scroll down to **Connection string**.
-3. Click **URI** tab, copy the string, and substitute your database password.
-4. Paste into `DATABASE_URL`.
+- **Database Host:** `ep-square-art-b50bjud9-pooler.c-7.us-east-2.aws.neon.tech`
+- **Database Name:** `PastSite`
+- **Live Connection String:**
+  ```env
+  DATABASE_URL="postgresql://neondb_owner:npg_LphFQwI7qPX1@ep-square-art-b50bjud9-pooler.c-7.us-east-2.aws.neon.tech/PastSite?sslmode=require&channel_binding=require"
+  ```
+- **Local vs Live Separation:**
+  - Local development runs against your local Docker PostgreSQL in `.env` (`localhost:5432`).
+  - Production deployments (Vercel / cloud) automatically use `.env.production` containing the Neon connection.
+  - To sync or seed Neon from your CLI at any time:
+    ```bash
+    pnpm db:neon:push   # Pushes Prisma schema to Neon
+    pnpm db:neon:seed   # Seeds Apex Pest Solutions demo fleet into Neon
+    ```
 
 ---
 
@@ -92,8 +89,8 @@ If you want to allow Google sign-in alongside email/password:
 7. Copy the **Client ID** and **Client Secret**.
 8. Paste into `.env`:
    ```env
-   AUTH_GOOGLE_ID="226912664685-nggdbbe5dmk71tqqvjrp2h8kt6qeaq4a.apps.googleusercontent.com"
-   AUTH_GOOGLE_SECRET="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"
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
    ```
    *(If you don't need Google login, leave these blank; email/password authentication will work out of the box).*
 

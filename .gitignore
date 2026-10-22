@@ -1,1 +1,67 @@
-node_modules
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Debug and process logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing & coverage
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# OS and Editor files
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Next.js build output
+.next/
+out/
+build/
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Debug and process logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing & coverage
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# OS and Editor files
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.swp
+*.swo
+
