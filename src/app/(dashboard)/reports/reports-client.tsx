@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import {
   FlaskConical,
   AlertTriangle,
   Info,
+  QrCode,
 } from "lucide-react";
 import { toast } from "sonner";
 import { EPA_CHEMICAL_DIRECTORY, type ChemicalProduct } from "@/lib/chemicals";
@@ -365,8 +367,9 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
                       <th className="p-3">Customer & Address</th>
                       <th className="p-3">Pest Target</th>
                       <th className="p-3">Chemical & EPA #</th>
-                      <th className="p-3">Quantity & Areas</th>
+                      <th className="p-3">Quantity &amp; Areas</th>
                       <th className="p-3">Applicator</th>
+                      <th className="p-3 text-right">Certificate &amp; QR</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -409,6 +412,16 @@ export function ReportsClient({ initialLogs, customers, organizationName }: Repo
                               Lic: {log.licenseNumber}
                             </span>
                           )}
+                        </td>
+                        <td className="p-3 text-right whitespace-nowrap">
+                          <Link
+                            href={`/verify/${log.jobId || log.id}`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-border text-xs font-semibold hover:bg-muted text-primary"
+                          >
+                            <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                            Verify Record
+                          </Link>
                         </td>
                       </tr>
                     ))}

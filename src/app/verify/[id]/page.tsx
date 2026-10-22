@@ -19,8 +19,8 @@ interface VerifyPageProps {
 export default async function VerifyRecordPage({ params }: VerifyPageProps) {
   const { id } = await params;
 
-  // Lookup Job or TreatmentLog
-  const job = await db.job.findUnique({
+  // 1. Lookup by Job ID
+  let job = await db.job.findUnique({
     where: { id },
     include: {
       organization: true,
@@ -31,8 +31,41 @@ export default async function VerifyRecordPage({ params }: VerifyPageProps) {
     },
   });
 
+  // 2. Fallback: Lookup by Invoice ID or Token or InvoiceNumber
+  let invoice = null;
+  if (!job) {
+    invoice = await db.invoice.findFirst({
+      where: {
+        OR: [{ id }, { publicToken: id }, { invoiceNumber: id }],
+      },
+      include: {
+        organization: true,
+        customer: true,
+        job: {
+          include: {
+            property: true,
+            treatmentLogs: true,
+            technician: { select: { name: true, licenseNumber: true } },
+          },
+        },
+      },
+    });
+
+    if (invoice?.job) {
+      job = {
+        ...invoice.job,
+        organization: invoice.organization,
+        customer: invoice.customer,
+      } as any;
+    }
+  }
+
+  const defaultOrg = await db.organization.findFirst();
+
+  const org = job?.organization || invoice?.organization || defaultOrg;
   const log = job?.treatmentLogs?.[0];
-  const org = job?.organization;
+  const customer = job?.customer || invoice?.customer;
+  const property = job?.property;
 
   return (
     <div className="min-h-screen bg-muted/20 text-foreground flex flex-col justify-between p-4 sm:p-6 md:p-10">
@@ -150,3 +183,4 @@ export default async function VerifyRecordPage({ params }: VerifyPageProps) {
     </div>
   );
 }
+

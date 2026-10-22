@@ -26,6 +26,8 @@ import {
   Loader2,
   CheckCircle2,
   Sparkles,
+  QrCode,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -358,6 +360,29 @@ export function InvoiceListClient({
                           <ExternalLink className="w-4 h-4" />
                         </Button>
                       </Link>
+
+                      <Link href={`/verify/${inv.jobId || inv.id || inv.invoiceNumber}`} target="_blank">
+                        <Button variant="outline" size="sm" title="Verify EPA QR Certificate">
+                          <QrCode className="w-4 h-4 text-emerald-600" />
+                        </Button>
+                      </Link>
+
+                      {inv.customer?.phone && (
+                        <a
+                          href={`https://api.whatsapp.com/send?phone=${inv.customer.phone.replace(/[^0-9]/g, "")}&text=${encodeURIComponent(
+                            `Hello ${inv.customer.firstName}, here is your pest service invoice #${inv.invoiceNumber} for ${formatMoney(
+                              inv.totalCents,
+                              currency
+                            )}. You can view and pay online here: https://pestpilots.vercel.app/invoice/${inv.publicToken}`
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Button variant="outline" size="sm" title="Send Invoice on WhatsApp" className="text-emerald-600">
+                            <MessageSquare className="w-4 h-4" />
+                          </Button>
+                        </a>
+                      )}
 
                       <Button
                         size="sm"

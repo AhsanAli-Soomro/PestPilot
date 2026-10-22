@@ -197,3 +197,4 @@ export function PriceCalculator({ onBookPlan }: PriceCalculatorProps) {
     </Card>
   );
 }
+

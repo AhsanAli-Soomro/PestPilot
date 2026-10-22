@@ -18,6 +18,8 @@ import {
   Calendar,
   Loader2,
   DollarSign,
+  QrCode,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -255,6 +257,42 @@ export function PublicInvoiceClient({ invoice, paymentSuccess }: PublicInvoiceCl
                 <strong>Notes:</strong> {invoice.notes}
               </div>
             )}
+
+            {/* Official Scannable QR Code Service Verification Box */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-secondary/30 border border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                {/* Visual Scannable QR Code */}
+                <div className="p-2 rounded-xl bg-white border border-border shadow-sm shrink-0">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(
+                      `https://pestpilots.vercel.app/verify/${invoice.jobId || invoice.id || invoice.invoiceNumber}`
+                    )}`}
+                    alt="Scan to Verify EPA Compliance & Treatment Record"
+                    className="w-20 h-20"
+                  />
+                </div>
+
+                <div className="space-y-1 text-left">
+                  <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs">
+                    <ShieldCheck className="w-4 h-4 shrink-0" />
+                    <span>CERTIFIED PEST SERVICE RECORD</span>
+                  </div>
+                  <p className="font-bold text-sm text-foreground">Official EPA Treatment &amp; Applicator Verification</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Scan this QR code with any smartphone camera to verify chemical lot numbers, applicator license, and digital signatures.
+                  </p>
+                </div>
+              </div>
+
+              <Link
+                href={`/verify/${invoice.jobId || invoice.id || invoice.invoiceNumber}`}
+                target="_blank"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-bold text-foreground transition-all shrink-0 w-full sm:w-auto shadow-sm"
+              >
+                <QrCode className="w-4 h-4 text-primary" />
+                Verify Certificate
+              </Link>
+            </div>
 
             {/* Pay Online Action Bar */}
             {!isPaid && (

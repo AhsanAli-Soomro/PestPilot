@@ -18,7 +18,13 @@ export default async function PublicInvoicePage({ params, searchParams }: PagePr
     include: {
       organization: true,
       customer: true,
-      job: { include: { property: true } },
+      job: {
+        include: {
+          property: true,
+          treatmentLogs: { where: { deletedAt: null } },
+          technician: { select: { name: true, phone: true, licenseNumber: true } },
+        },
+      },
       lineItems: true,
       payments: { orderBy: { paidAt: "desc" } },
     },

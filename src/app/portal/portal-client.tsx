@@ -847,3 +847,4 @@ export function PortalClient({ initialCustomer }: PortalClientProps) {
     </div>
   );
 }
+

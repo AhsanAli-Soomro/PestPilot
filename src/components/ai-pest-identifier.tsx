@@ -298,3 +298,4 @@ export function AiPestIdentifier({ onSelectPest, onBookService, mode = "customer
     </Card>
   );
 }
+

@@ -279,3 +279,4 @@ export function LeadsClient({ customers, currency }: LeadsClientProps) {
     </div>
   );
 }
+

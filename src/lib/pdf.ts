@@ -142,12 +142,29 @@ export function generateInvoicePdf(data: InvoicePdfData): jsPDF {
 
   // Footer / Notes
   if (data.notes) {
-    y = Math.max(y + 15, 230);
+    y = Math.max(y + 12, 220);
     doc.setFontSize(8);
     doc.setTextColor(gray);
     doc.text("PAYMENT TERMS & NOTES:", 20, y);
-    doc.text(doc.splitTextToSize(data.notes, 170), 20, y + 5);
+    doc.text(doc.splitTextToSize(data.notes, 170), 20, y + 4);
+    y += 8;
   }
+
+  // Official EPA Verification Stamp & Scannable Reference
+  const verifyY = Math.max(y + 8, 248);
+  doc.setDrawColor(16, 185, 129);
+  doc.setFillColor(240, 253, 244);
+  doc.roundedRect(20, verifyY, 170, 20, 2, 2, "FD");
+
+  doc.setFontSize(8);
+  doc.setTextColor("#059669");
+  doc.text("[ OFFICIAL CERTIFIED PEST TREATMENT RECORD ]", 25, verifyY + 6);
+
+  doc.setFontSize(7.5);
+  doc.setTextColor("#374151");
+  doc.text("Scan or verify official EPA pesticide lot numbers, applicator license & digital signature:", 25, verifyY + 11);
+  doc.setTextColor("#0284c7");
+  doc.text(`Verification URL: https://pestpilots.vercel.app/verify/${data.invoiceNumber}`, 25, verifyY + 16);
 
   doc.setFontSize(7);
   doc.setTextColor("#999999");
