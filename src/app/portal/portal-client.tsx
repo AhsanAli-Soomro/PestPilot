@@ -35,14 +35,16 @@ import {
   cancelCustomerAppointmentAction,
   submitCustomerComplaintAction,
   renewCustomerServicePlanAction,
+  logoutCustomerPortalAction,
 } from "@/actions/portal";
 import { formatDate, formatMoney } from "@/lib/utils";
 
 interface PortalClientProps {
   initialCustomer: any;
+  loggedInIdentifier?: string;
 }
 
-export function PortalClient({ initialCustomer }: PortalClientProps) {
+export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClientProps) {
   const [customer, setCustomer] = React.useState(initialCustomer);
   const [activeTab, setActiveTab] = React.useState<"appointments" | "history" | "invoices" | "amc" | "complaints" | "tools">("appointments");
   const [loading, setLoading] = React.useState(false);
@@ -183,8 +185,38 @@ export function PortalClient({ initialCustomer }: PortalClientProps) {
     }
   };
 
+  const handleLogout = async () => {
+    setLoading(true);
+    await logoutCustomerPortalAction();
+    toast.success("Signed out of Customer Portal");
+    window.location.href = "/portal";
+  };
+
   return (
     <div className="space-y-6">
+      {/* Customer Session Status & Switcher */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-2.5 px-4 rounded-xl bg-card border border-border shadow-sm text-xs gap-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="text-muted-foreground">Active Customer Account:</span>
+          <span className="font-bold text-foreground">
+            {customer.firstName} {customer.lastName}
+          </span>
+          <span className="text-muted-foreground/70 hidden sm:inline">
+            &bull; {customer.email || customer.phone || loggedInIdentifier}
+          </span>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="text-xs h-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+        >
+          Sign Out / Switch Customer
+        </Button>
+      </div>
+
       {/* Top Welcome Header & Contact Bar */}
       <Card className="border-border bg-gradient-to-r from-primary/10 via-card to-card shadow-sm overflow-hidden">
         <CardContent className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">

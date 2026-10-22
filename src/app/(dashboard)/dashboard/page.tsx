@@ -38,7 +38,7 @@ export default async function DashboardPage() {
 
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  // Queries scoped strictly by organizationId
+  // Queries scoped strictly by organizationId and role
   const [
     todayJobs,
     customerCount,
@@ -52,6 +52,7 @@ export default async function DashboardPage() {
         organizationId: user.organizationId,
         scheduledDate: { gte: today, lt: tomorrow },
         deletedAt: null,
+        ...(user.role === "TECHNICIAN" ? { technicianId: user.id } : {}),
       },
       include: {
         customer: true,
@@ -138,6 +139,35 @@ export default async function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Technician Field Mode Banner */}
+      {user.role === "TECHNICIAN" && (
+        <Card className="border-amber-500/40 bg-gradient-to-r from-amber-500/15 via-card to-card p-4 sm:p-5 shadow-md">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge className="bg-amber-500 text-black text-[10px] font-extrabold uppercase">
+                  Field Technician Active
+                </Badge>
+                <span className="text-xs text-muted-foreground font-medium">
+                  Signed in as {user.name || "Technician"}
+                </span>
+              </div>
+              <h2 className="text-lg font-black text-foreground">
+                Your Today&apos;s Field Stops &amp; 7-Step Checklist
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Access GPS check-ins, record EPA chemical batches, attach photos, and capture customer signatures directly on mobile.
+              </p>
+            </div>
+            <Link href="/mobile/today" className="shrink-0 w-full sm:w-auto">
+              <Button className="w-full sm:w-auto font-black shadow-lg shadow-primary/25 bg-amber-500 hover:bg-amber-600 text-black">
+                <Truck className="w-4 h-4 mr-2" /> Open Mobile Field App &rarr;
+              </Button>
+            </Link>
+          </div>
+        </Card>
+      )}
 
       {/* KPI Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

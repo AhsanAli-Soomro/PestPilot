@@ -2,18 +2,75 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+
+export async function loginCustomerPortalAction(identifier: string) {
+  try {
+    const clean = identifier.trim();
+    if (!clean) {
+      return { success: false, customer: null, error: "Please enter your email, phone, or invoice number" };
+    }
+
+    const cookieStore = await cookies();
+    cookieStore.set("pestpilot_customer_identifier", clean, {
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: "/",
+      sameSite: "lax",
+    });
+
+    const res = await lookupCustomerPortalAction(clean);
+    return res;
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to sign in";
+    return { success: false, customer: null, error: msg };
+  }
+}
+
+export async function logoutCustomerPortalAction() {
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete("pestpilot_customer_identifier");
+    return { success: true };
+  } catch {
+    return { success: true };
+  }
+}
 
 export async function lookupCustomerPortalAction(identifier: string) {
   try {
     const cleanId = identifier.trim().toLowerCase();
     const cleanPhone = identifier.replace(/[^0-9]/g, "");
 
+    // Check if identifier is an invoice number or token
+    const matchingInvoice = await db.invoice.findFirst({
+      where: {
+        OR: [
+          { invoiceNumber: { equals: identifier.trim(), mode: "insensitive" } },
+          { publicToken: identifier.trim() },
+        ],
+        deletedAt: null,
+      },
+      select: { customerId: true },
+    });
+
+    // Check if identifier is a job ID
+    const matchingJob = await db.job.findFirst({
+      where: {
+        id: identifier.trim(),
+        deletedAt: null,
+      },
+      select: { customerId: true },
+    });
+
+    const directCustomerId = matchingInvoice?.customerId || matchingJob?.customerId;
+
     let customer = await db.customer.findFirst({
       where: {
         deletedAt: null,
         OR: [
+          ...(directCustomerId ? [{ id: directCustomerId }] : []),
           { email: { equals: cleanId, mode: "insensitive" } },
-          ...(cleanPhone ? [{ phone: { contains: cleanPhone } }] : []),
+          ...(cleanPhone && cleanPhone.length >= 7 ? [{ phone: { contains: cleanPhone } }] : []),
         ],
       },
       include: {
@@ -147,10 +204,10 @@ export async function lookupCustomerPortalAction(identifier: string) {
       };
     }
 
-    return { success: true, customer };
+    return { success: true, customer, error: null };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Portal lookup failed";
-    return { success: false, error: msg };
+    return { success: false, customer: null, error: msg };
   }
 }
 

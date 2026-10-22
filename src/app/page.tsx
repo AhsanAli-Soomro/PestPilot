@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { PriceCalculator } from "@/components/price-calculator";
 import { AiPestIdentifier } from "@/components/ai-pest-identifier";
+import { FreeToolsHub } from "@/components/free-tools-hub";
 import {
   ShieldCheck,
   Truck,
@@ -42,11 +43,11 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-foreground transition-colors">
               Features
             </a>
-            <a href="#tools" className="hover:text-foreground transition-colors">
-              Free AI Tools
+            <a href="#free-tools" className="hover:text-foreground transition-colors">
+              Free Customer Tools
             </a>
             <a href="#offline" className="hover:text-foreground transition-colors">
-              Offline Field Mode
+              Offline Field App
             </a>
             <a href="#pricing" className="hover:text-foreground transition-colors">
               Pricing
@@ -58,14 +59,19 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
+            <Link href="/portal">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-xs font-bold text-muted-foreground hover:text-foreground">
+                Customer Sign In
+              </Button>
+            </Link>
             <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Sign In
+              <Button variant="outline" size="sm" className="text-xs font-bold">
+                Staff &amp; Tech Login
               </Button>
             </Link>
             <Link href="/signup">
-              <Button size="sm" className="font-bold">
-                Get Started Free
+              <Button size="sm" className="font-bold text-xs">
+                Start Free Trial
               </Button>
             </Link>
           </div>
@@ -245,24 +251,21 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Free Interactive Tools: Price Calculator & AI Pest Identifier */}
-      <section id="tools" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-border">
-        <div className="text-center space-y-3 mb-12">
-          <Badge variant="secondary" className="text-xs font-bold uppercase tracking-wider">
-            100% Free Self-Service Tools
+      {/* Free Interactive Tools Suite: AI Scanner, Calculator, Record Verifier, Portal Access */}
+      <section id="free-tools" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-border scroll-mt-10">
+        <div id="tools" className="text-center space-y-3 mb-10">
+          <Badge variant="secondary" className="text-xs font-bold uppercase tracking-wider text-primary">
+            100% Free Self-Service Tools &bull; No Login Required
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
-            Try Our AI Pest Scanner &amp; Instant Price Estimator
+            Free Customer Self-Service &amp; Pest Tools
           </h2>
           <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
-            Zero subscription required to test. Identify invasive insects from a photo, calculate instant extermination costs, or access your self-service Customer Portal.
+            Test our instant AI insect scanner, estimate transparent treatment costs, verify authentic EPA service certificates, or sign in to your self-service customer portal.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-          <PriceCalculator />
-          <AiPestIdentifier mode="customer" />
-        </div>
+        <FreeToolsHub />
       </section>
 
       {/* Pricing Section */}
