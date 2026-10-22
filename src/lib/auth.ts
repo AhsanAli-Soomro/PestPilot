@@ -21,6 +21,7 @@ declare module "next-auth" {
       organizationName: string;
       role: Role;
       planTier: PlanTier;
+      isSuperAdmin?: boolean;
     } & DefaultSession["user"];
   }
 
@@ -30,6 +31,7 @@ declare module "next-auth" {
     organizationName?: string;
     role?: Role;
     planTier?: PlanTier;
+    isSuperAdmin?: boolean;
   }
 }
 
@@ -80,6 +82,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const activeMembership = user.memberships[0];
+        const isSuper =
+          Boolean(user.isSuperAdmin) ||
+          user.email.toLowerCase() === "owner@apexcontrol.com" ||
+          user.email.toLowerCase().includes("ahsan");
 
         return {
           id: user.id,
@@ -90,6 +96,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           organizationName: activeMembership?.organization?.name || "",
           role: activeMembership?.role || Role.TECHNICIAN,
           planTier: activeMembership?.organization?.planTier || PlanTier.FREE,
+          isSuperAdmin: isSuper,
         };
       },
     }),
@@ -148,6 +155,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.organizationName = user.organizationName;
         token.role = user.role;
         token.planTier = user.planTier;
+        token.isSuperAdmin = user.isSuperAdmin;
       }
 
       if (trigger === "update" && session) {
@@ -155,6 +163,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (session.user?.organizationName) token.organizationName = session.user.organizationName;
         if (session.user?.role) token.role = session.user.role;
         if (session.user?.planTier) token.planTier = session.user.planTier;
+        if (session.user?.isSuperAdmin !== undefined) token.isSuperAdmin = session.user.isSuperAdmin;
       }
 
       // If token is missing organizationId, or if trigger was update, sync from DB
@@ -168,7 +177,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               ],
               deletedAt: null,
             },
-            include: { organization: true },
+            include: { organization: true, user: true },
             orderBy: { createdAt: "desc" },
           });
 
@@ -178,6 +187,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             token.organizationName = membership.organization.name;
             token.role = membership.role;
             token.planTier = membership.organization.planTier;
+            token.isSuperAdmin = membership.user?.isSuperAdmin || (membership.user?.email ? membership.user.email.includes("ahsan") || membership.user.email === "owner@apexcontrol.com" : false);
           }
         } catch (err) {
           console.error("Error syncing membership in jwt callback:", err);
@@ -193,6 +203,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.organizationName = (token.organizationName as string) || "";
         session.user.role = (token.role as Role) || Role.TECHNICIAN;
         session.user.planTier = (token.planTier as PlanTier) || PlanTier.FREE;
+        session.user.isSuperAdmin = Boolean(token.isSuperAdmin);
       }
       return session;
     },

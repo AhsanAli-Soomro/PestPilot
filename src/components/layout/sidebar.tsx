@@ -16,6 +16,7 @@ import {
   Bell,
   Settings,
   ShieldCheck,
+  Crown,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -94,8 +95,17 @@ export function Sidebar({ role, className }: SidebarProps) {
         </nav>
       </div>
 
-      {/* Role Pill */}
-      <div className="pt-4 border-t border-border px-2">
+      {/* Super Admin Link & Role Pill */}
+      <div className="pt-4 border-t border-border px-2 space-y-2">
+        {(role === "OWNER" || role === "ADMIN") && (
+          <Link
+            href="/admin"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
+          >
+            <Crown className="w-4 h-4" />
+            <span>Super Admin Portal</span>
+          </Link>
+        )}
         <div className="rounded-xl bg-secondary/50 p-3 flex items-center justify-between">
           <div>
             <p className="text-xs text-muted-foreground font-medium">Logged Role</p>

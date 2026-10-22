@@ -22,6 +22,7 @@ import {
   FileCheck2,
   Bell,
   Settings,
+  Crown,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -124,6 +125,17 @@ export function Header({ organizationName, userName, userEmail, role }: HeaderPr
                     <Settings className="w-4 h-4 text-muted-foreground" />
                     Settings & Team
                   </Link>
+
+                  {(role === "OWNER" || role === "ADMIN" || (userEmail && (userEmail.includes("ahsan") || userEmail.includes("admin")))) && (
+                    <Link
+                      href="/admin"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-amber-600 dark:text-amber-400 font-semibold hover:bg-amber-500/10 transition-colors touch-target"
+                    >
+                      <Crown className="w-4 h-4 text-amber-500" />
+                      Super Admin Portal
+                    </Link>
+                  )}
 
                   <button
                     type="button"
