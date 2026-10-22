@@ -23,9 +23,12 @@ import {
   Bell,
   Settings,
   Crown,
+  Download,
+  Laptop,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { InstallAppModal } from "@/components/install-app-modal";
 
 interface HeaderProps {
   organizationName?: string;
@@ -38,6 +41,7 @@ interface HeaderProps {
 export function Header({ organizationName, userName, userEmail, role, isSuperAdmin }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
+  const [installModalOpen, setInstallModalOpen] = React.useState(false);
   const pathname = usePathname();
 
   const allNavItems = [
@@ -84,8 +88,17 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
           )}
         </div>
 
-        {/* Right Actions: Sync Status, Theme Toggle, User Menu */}
-        <div className="flex items-center gap-3">
+        {/* Right Actions: Sync Status, Install App, Theme Toggle, User Menu */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button
+            type="button"
+            onClick={() => setInstallModalOpen(true)}
+            title="Download Offline App for Mac, PC & Android"
+            className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-border bg-card hover:bg-muted/60 text-xs font-semibold text-muted-foreground hover:text-foreground transition-all"
+          >
+            <Download className="w-3.5 h-3.5 text-primary" />
+            <span>Install App</span>
+          </button>
           <SyncStatusBadge />
           <ThemeToggle />
 
@@ -126,6 +139,18 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
                     <Settings className="w-4 h-4 text-muted-foreground" />
                     Settings & Team
                   </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setInstallModalOpen(true);
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-foreground hover:bg-muted/60 transition-colors touch-target text-left"
+                  >
+                    <Download className="w-4 h-4 text-primary" />
+                    Install App / APK
+                  </button>
 
                   {isSuperAdmin && (
                     <Link
@@ -239,6 +264,12 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
           </div>
         </div>
       )}
+
+      {/* Offline Desktop / Mobile Installation Modal */}
+      <InstallAppModal
+        isOpen={installModalOpen}
+        onClose={() => setInstallModalOpen(false)}
+      />
     </>
   );
 }

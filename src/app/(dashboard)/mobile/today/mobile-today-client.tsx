@@ -32,8 +32,10 @@ import {
   MessageSquare,
   CheckSquare,
   Scan,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
+import { InstallAppModal } from "@/components/install-app-modal";
 
 interface MobileTodayClientProps {
   initialJobs: any[];
@@ -97,6 +99,7 @@ export function MobileTodayClient({
   const [afterPhotosMap, setAfterPhotosMap] = React.useState<Record<string, string[]>>({});
   const [isAiModalOpen, setIsAiModalOpen] = React.useState(false);
   const [targetJobForAi, setTargetJobForAi] = React.useState<any | null>(null);
+  const [isInstallModalOpen, setIsInstallModalOpen] = React.useState(false);
 
   const toggleSiteInspection = (jobId: string) => {
     setSiteInspectedMap((prev) => ({
@@ -353,9 +356,18 @@ export function MobileTodayClient({
             {completedCount} / {jobs.length} Complete
           </span>
         </div>
-        <p className="text-xs text-primary-foreground/80">
-          Technician: <strong>{userName}</strong> &bull; Large outdoor buttons &bull; Offline active
-        </p>
+        <div className="flex items-center justify-between text-xs text-primary-foreground/90 pt-0.5">
+          <p>
+            Technician: <strong>{userName}</strong> &bull; Offline active
+          </p>
+          <button
+            type="button"
+            onClick={() => setIsInstallModalOpen(true)}
+            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] transition-all shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" /> Install App / APK
+          </button>
+        </div>
 
         {/* Progress Bar */}
         <div className="w-full bg-black/20 h-2 rounded-full overflow-hidden">
@@ -954,6 +966,12 @@ export function MobileTodayClient({
           }}
         />
       </Modal>
+
+      {/* Offline Desktop & Capacitor Installation Modal */}
+      <InstallAppModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+      />
     </div>
   );
 }

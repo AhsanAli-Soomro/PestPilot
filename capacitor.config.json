@@ -1,0 +1,21 @@
+{
+  "appId": "com.pestpilot.fieldapp",
+  "appName": "PestPilot",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://pestpilots.vercel.app",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#064e3b"
+    }
+  }
+}
