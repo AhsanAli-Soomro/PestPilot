@@ -163,8 +163,8 @@ export function ScheduleClient({
   return (
     <div className="space-y-4">
       {/* View Switcher & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex rounded-lg border border-border p-1 bg-card">
             <button
               onClick={() => setViewMode("list")}
@@ -203,7 +203,7 @@ export function ScheduleClient({
             <select
               value={selectedTech}
               onChange={(e) => setSelectedTech(e.target.value)}
-              className="h-9 rounded-lg border border-input bg-card px-3 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-9 rounded-lg border border-input bg-card px-2.5 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="ALL">All Technicians</option>
               {technicians.map((t) => (
@@ -219,20 +219,20 @@ export function ScheduleClient({
             size="sm"
             onClick={handleSmartRouteOptimize}
             disabled={isOptimizing}
-            className="border-primary/40 text-primary hover:bg-primary/10 text-xs h-9"
+            className="border-primary/40 text-primary hover:bg-primary/10 text-xs h-9 shrink-0"
           >
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500" />
             {isOptimizing ? "Optimizing..." : "Smart Route Optimize"}
           </Button>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Link href="/mobile/today">
-            <Button variant="accent" size="sm">
-              <Truck className="w-4 h-4 mr-1.5" /> Open Field Dispatch
+        <div className="flex flex-wrap items-center gap-2">
+          <Link href="/mobile/today" className="flex-1 sm:flex-none">
+            <Button variant="accent" size="sm" className="font-bold w-full sm:w-auto h-9">
+              <Truck className="w-4 h-4 mr-1.5" /> Field Dispatch
             </Button>
           </Link>
-          <Button size="sm" onClick={() => setIsNewJobOpen(true)}>
+          <Button size="sm" onClick={() => setIsNewJobOpen(true)} className="flex-1 sm:flex-none font-bold h-9">
             <Plus className="w-4 h-4 mr-1.5" /> Schedule Job
           </Button>
         </div>

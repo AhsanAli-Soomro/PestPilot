@@ -19,7 +19,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "cap:sync": "cap sync android",
-    "cap:open": "cap open android"
+    "cap:open": "cap open android",
+    "build:apk": "export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home && cd android && ./gradlew assembleDebug --no-daemon && mkdir -p ../build-outputs && cp app/build/outputs/apk/debug/app-debug.apk ../build-outputs/PestPilot-v1.0.apk",
+    "build:aab": "export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home && cd android && ./gradlew bundleDebug --no-daemon && mkdir -p ../build-outputs && cp app/build/outputs/bundle/debug/app-debug.aab ../build-outputs/PestPilot-v1.0.aab"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",

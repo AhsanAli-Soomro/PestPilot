@@ -25,6 +25,10 @@ import {
   Crown,
   Download,
   Laptop,
+  UserPlus,
+  Boxes,
+  AlertOctagon,
+  Globe,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -47,25 +51,29 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
   const allNavItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Today's Jobs (Field)", href: "/mobile/today", icon: Truck, highlight: true },
-    { name: "Schedule", href: "/schedule", icon: Calendar },
-    { name: "Customers", href: "/customers", icon: Users },
+    { name: "Schedule & Route", href: "/schedule", icon: Calendar },
+    { name: "Customers (CRM)", href: "/customers", icon: Users },
+    { name: "Leads & Inquiries", href: "/leads", icon: UserPlus },
     { name: "Quotes", href: "/quotes", icon: FileSpreadsheet },
     { name: "Invoices", href: "/invoices", icon: Receipt },
-    { name: "Recurring Plans", href: "/service-plans", icon: Repeat },
+    { name: "Recurring Plans (AMC)", href: "/service-plans", icon: Repeat },
+    { name: "Chemicals & Inventory", href: "/inventory", icon: Boxes },
+    { name: "Complaints & Warranty", href: "/complaints", icon: AlertOctagon },
     { name: "Compliance Reports", href: "/reports", icon: FileCheck2 },
-    { name: "Reminders", href: "/reminders", icon: Bell },
+    { name: "Reminders & WhatsApp", href: "/reminders", icon: Bell },
+    { name: "Customer Portal", href: "/portal", icon: Globe },
     { name: "Settings & Team", href: "/settings", icon: Settings },
   ];
 
   return (
     <>
       <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card/80 px-4 sm:px-6 backdrop-blur-md">
-        {/* Mobile Menu Button + Brand */}
+        {/* Mobile & Tablet Menu Button + Brand */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setMobileDrawerOpen(true)}
-            className="md:hidden p-2 rounded-xl border border-border bg-card hover:bg-muted/60 transition-colors touch-target focus:outline-none"
+            className="lg:hidden p-2 rounded-xl border border-border bg-card hover:bg-muted/60 transition-colors touch-target focus:outline-none"
             aria-label="Open navigation menu"
           >
             <Menu className="w-5 h-5 text-foreground" />
@@ -75,7 +83,7 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
               <ShieldCheck className="w-5 h-5 text-emerald-300" />
             </div>
-            <span className="font-bold text-base text-foreground md:hidden">
+            <span className="font-bold text-base text-foreground lg:hidden">
               Pest<span className="text-amber-500">Pilot</span>
             </span>
           </div>
@@ -178,9 +186,9 @@ export function Header({ organizationName, userName, userEmail, role, isSuperAdm
         </div>
       </header>
 
-      {/* Mobile Drawer (Accessible on mobile screens) */}
+      {/* Mobile & Tablet Drawer (Accessible on mobile and tablet screens) */}
       {mobileDrawerOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-50 lg:hidden">
           <div
             className="fixed inset-0 bg-background/80 backdrop-blur-sm"
             onClick={() => setMobileDrawerOpen(false)}

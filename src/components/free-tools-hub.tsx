@@ -57,7 +57,7 @@ export function FreeToolsHub() {
   return (
     <div className="space-y-8">
       {/* Tab Switcher Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-card border border-border shadow-sm max-w-2xl mx-auto">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 p-1.5 rounded-2xl bg-card border border-border shadow-sm max-w-2xl mx-auto">
         <button
           type="button"
           onClick={() => setActiveTab("scanner")}

@@ -183,7 +183,7 @@ export function SettingsClient({
   return (
     <div className="space-y-6">
       {/* Settings Navigation Tabs */}
-      <div className="flex border-b border-border space-x-6 overflow-x-auto">
+      <div className="flex border-b border-border space-x-4 sm:space-x-6 overflow-x-auto scrollbar-none flex-nowrap pb-1">
         <button
           onClick={() => setActiveTab("company")}
           className={`pb-3 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${

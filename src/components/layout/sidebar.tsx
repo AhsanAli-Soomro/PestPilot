@@ -53,7 +53,7 @@ export function Sidebar({ role, isSuperAdmin, className }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "hidden md:flex flex-col w-64 border-r border-border bg-card/60 backdrop-blur-md p-4 justify-between h-screen sticky top-0",
+        "hidden lg:flex flex-col w-64 border-r border-border bg-card/60 backdrop-blur-md p-4 justify-between h-screen sticky top-0 shrink-0",
         className
       )}
     >

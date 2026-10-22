@@ -25,9 +25,9 @@ export default async function DashboardLayout({
   const isSuper = checkIsSuperAdmin(user);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
       <Sidebar role={user.role} isSuperAdmin={isSuper} />
-      <div className="flex-1 flex flex-col min-w-0 pb-16 md:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-6 lg:pb-0">
         <Header
           organizationName={user.organizationName}
           userName={user.name}

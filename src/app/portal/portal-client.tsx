@@ -258,7 +258,7 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
       </Card>
 
       {/* Navigation Tabs */}
-      <div className="flex border-b border-border overflow-x-auto gap-4 pb-1">
+      <div className="flex border-b border-border overflow-x-auto scrollbar-none flex-nowrap gap-3 sm:gap-4 pb-1">
         {[
           { id: "appointments", label: "Appointments", badge: upcomingJobs.length },
           { id: "history", label: "Treatment History & Certificates" },
