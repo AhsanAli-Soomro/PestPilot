@@ -106,11 +106,11 @@ export function MobileTodayClient({
           routeOrder: j.routeOrder,
           completedAt: j.completedAt ? new Date(j.completedAt).toISOString() : null,
           notes: j.notes,
-          customerName: `${j.customer.firstName} ${j.customer.lastName}`,
-          customerPhone: j.customer.phone,
-          propertyAddress: j.property.address,
-          gateCode: j.property.gateCode,
-          petsKidsWarnings: j.property.petsKidsWarnings,
+          customerName: j.customer ? `${j.customer.firstName || ""} ${j.customer.lastName || ""}`.trim() : "Unknown Customer",
+          customerPhone: j.customer?.phone || "",
+          propertyAddress: j.property?.address || "Address not provided",
+          gateCode: j.property?.gateCode || "",
+          petsKidsWarnings: j.property?.petsKidsWarnings || "",
           updatedAt: new Date(j.updatedAt).toISOString(),
           version: j.version,
           deletedAt: null,
@@ -293,8 +293,8 @@ export function MobileTodayClient({
   const multiStopMapsUrl = React.useMemo(() => {
     if (jobs.length === 0) return null;
     const activeStops = jobs
-      .filter((j) => j.status !== "COMPLETED" && j.status !== "CANCELLED")
-      .map((j) => encodeURIComponent(`${j.property.address}, ${j.property.city}, ${j.property.state || ""}`));
+      .filter((j) => j.status !== "COMPLETED" && j.status !== "CANCELLED" && j.property?.address)
+      .map((j) => encodeURIComponent(`${j.property.address}, ${j.property.city || ""}, ${j.property.state || ""}`));
     if (activeStops.length === 0) return null;
     return `https://www.google.com/maps/dir/${activeStops.join("/")}`;
   }, [jobs]);
@@ -409,7 +409,7 @@ export function MobileTodayClient({
                       </div>
                       <div>
                         <h2 className="font-extrabold text-base text-foreground leading-tight">
-                          {customer.firstName} {customer.lastName}
+                          {customer?.firstName || "Customer"} {customer?.lastName || ""}
                         </h2>
                         <p className="text-xs text-muted-foreground font-medium mt-0.5">
                           {job.title}
@@ -434,17 +434,17 @@ export function MobileTodayClient({
                   {/* Address & Safety Warnings */}
                   <div className="space-y-1.5 text-xs">
                     <p className="font-semibold text-foreground flex items-center gap-1.5">
-                      {property.address} {property.unit && `Unit ${property.unit}`}
+                      {property?.address || "Address not provided"} {property?.unit && `Unit ${property.unit}`}
                     </p>
 
-                    {property.gateCode && (
+                    {property?.gateCode && (
                       <div className="p-2 rounded-lg bg-secondary font-bold text-foreground flex items-center gap-2">
                         <KeyRound className="w-4 h-4 text-amber-600 shrink-0" />
                         <span>GATE CODE: {property.gateCode}</span>
                       </div>
                     )}
 
-                    {property.petsKidsWarnings && (
+                    {property?.petsKidsWarnings && (
                       <div className="p-2 rounded-lg bg-amber-500/15 text-amber-900 dark:text-amber-300 font-bold flex items-center gap-2">
                         <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
                         <span>SAFETY: {property.petsKidsWarnings}</span>
@@ -456,7 +456,7 @@ export function MobileTodayClient({
                   <div className="grid grid-cols-2 gap-2 pt-1">
                     <a
                       href={`https://maps.google.com/?q=${encodeURIComponent(
-                        `${property.address}, ${property.city}, ${property.state} ${property.postalCode}`
+                        `${property?.address || ""}, ${property?.city || ""}, ${property?.state || ""} ${property?.postalCode || ""}`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -467,7 +467,7 @@ export function MobileTodayClient({
                     </a>
 
                     <a
-                      href={`tel:${customer.phone}`}
+                      href={customer?.phone ? `tel:${customer.phone}` : "#"}
                       className="flex items-center justify-center gap-2 h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
                     >
                       <Phone className="w-4 h-4 text-primary" />
@@ -545,9 +545,9 @@ export function MobileTodayClient({
           <form onSubmit={handleSubmitTreatmentLog} className="space-y-4">
             <div className="p-3 rounded-xl bg-secondary/50 text-xs space-y-1">
               <p className="font-bold text-foreground">
-                {activeJobForLog.customer.firstName} {activeJobForLog.customer.lastName}
+                {activeJobForLog.customer?.firstName || "Customer"} {activeJobForLog.customer?.lastName || ""}
               </p>
-              <p className="text-muted-foreground">{activeJobForLog.property.address}</p>
+              <p className="text-muted-foreground">{activeJobForLog.property?.address || "Address not provided"}</p>
             </div>
 
             {/* Target Pest */}

@@ -143,39 +143,43 @@ class SyncEngine {
       }
 
       // 2. PULL CHANGES
-      const metaCursor = await localDb.syncMeta.get("lastPullCursor");
-      const since = metaCursor?.value || "1970-01-01T00:00:00.000Z";
+      try {
+        const metaCursor = await localDb.syncMeta.get("lastPullCursor");
+        const since = metaCursor?.value || "1970-01-01T00:00:00.000Z";
 
-      const pullResponse = await fetch(getApiUrl(`/api/sync/pull?since=${encodeURIComponent(since)}`));
-      if (pullResponse.ok) {
-        const data = await pullResponse.json();
+        const pullResponse = await fetch(getApiUrl(`/api/sync/pull?since=${encodeURIComponent(since)}`));
+        if (pullResponse.ok) {
+          const data = await pullResponse.json();
 
-        // Apply incoming server updates
-        if (data.jobs && data.jobs.length > 0) {
-          await localDb.jobs.bulkPut(data.jobs);
-          pulledCount += data.jobs.length;
-        }
-        if (data.customers && data.customers.length > 0) {
-          await localDb.customers.bulkPut(data.customers);
-          pulledCount += data.customers.length;
-        }
-        if (data.properties && data.properties.length > 0) {
-          await localDb.properties.bulkPut(data.properties);
-          pulledCount += data.properties.length;
-        }
-        if (data.treatmentLogs && data.treatmentLogs.length > 0) {
-          await localDb.treatmentLogs.bulkPut(data.treatmentLogs);
-          pulledCount += data.treatmentLogs.length;
-        }
-        if (data.invoices && data.invoices.length > 0) {
-          await localDb.invoices.bulkPut(data.invoices);
-          pulledCount += data.invoices.length;
-        }
+          // Apply incoming server updates
+          if (data.jobs && data.jobs.length > 0) {
+            await localDb.jobs.bulkPut(data.jobs);
+            pulledCount += data.jobs.length;
+          }
+          if (data.customers && data.customers.length > 0) {
+            await localDb.customers.bulkPut(data.customers);
+            pulledCount += data.customers.length;
+          }
+          if (data.properties && data.properties.length > 0) {
+            await localDb.properties.bulkPut(data.properties);
+            pulledCount += data.properties.length;
+          }
+          if (data.treatmentLogs && data.treatmentLogs.length > 0) {
+            await localDb.treatmentLogs.bulkPut(data.treatmentLogs);
+            pulledCount += data.treatmentLogs.length;
+          }
+          if (data.invoices && data.invoices.length > 0) {
+            await localDb.invoices.bulkPut(data.invoices);
+            pulledCount += data.invoices.length;
+          }
 
-        // Update cursor
-        if (data.currentCursor) {
-          await localDb.syncMeta.put({ key: "lastPullCursor", value: data.currentCursor });
+          // Update cursor
+          if (data.currentCursor) {
+            await localDb.syncMeta.put({ key: "lastPullCursor", value: data.currentCursor });
+          }
         }
+      } catch (pullErr) {
+        console.warn("[Sync Engine]: Background pull skipped (offline or network error):", pullErr);
       }
 
       this.status = "online";

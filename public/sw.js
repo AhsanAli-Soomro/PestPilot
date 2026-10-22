@@ -1,11 +1,10 @@
-const CACHE_NAME = "pestpilot-cache-v1";
+const CACHE_NAME = "pestpilot-cache-v2";
 const OFFLINE_FALLBACK = "/offline.html";
 
+// Only precache static, non-authenticated public assets
 const PRECACHE_ASSETS = [
-  "/",
   "/manifest.json",
   "/offline.html",
-  "/mobile/today",
 ];
 
 self.addEventListener("install", (event) => {
@@ -22,6 +21,7 @@ self.addEventListener("activate", (event) => {
       return Promise.all(
         cacheNames.map((cache) => {
           if (cache !== CACHE_NAME) {
+            console.log("[Service Worker] Purging stale cache:", cache);
             return caches.delete(cache);
           }
         })
@@ -33,8 +33,13 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const { request } = event;
 
-  // Don't intercept POST/PUT/DELETE or sync API requests
-  if (request.method !== "GET" || request.url.includes("/api/sync") || request.url.includes("/api/auth")) {
+  // Completely bypass APIs, Next.js internal chunks/RSC, and non-GET requests
+  if (
+    request.method !== "GET" ||
+    request.url.includes("/api/") ||
+    request.url.includes("/_next/") ||
+    request.url.includes("?_rsc=")
+  ) {
     return;
   }
 
@@ -50,7 +55,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Network-first with cache fallback for static assets & pages
+  // Network-first with cache fallback for static public assets
   event.respondWith(
     fetch(request)
       .then((networkResponse) => {
