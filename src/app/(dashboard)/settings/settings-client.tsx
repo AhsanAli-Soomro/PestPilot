@@ -245,7 +245,30 @@ export function SettingsClient({
               Branding and invoice numbers displayed on customer quotes and receipts
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
+            {currentTier === "FREE" ? (
+              <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="font-bold text-amber-700 dark:text-amber-400">
+                    Free Plan: &quot;Powered by PestPilot&quot; Watermark Active
+                  </p>
+                  <p className="text-muted-foreground mt-0.5">
+                    Customer quotes and invoices will display the PestPilot watermark badge. Upgrade to Starter ($19/mo) to unlock 100% white-label branding.
+                  </p>
+                </div>
+                <Button size="sm" variant="outline" type="button" onClick={() => setActiveTab("billing")}>
+                  Upgrade to White-Label
+                </Button>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-xs flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+                <p className="font-medium text-emerald-700 dark:text-emerald-400">
+                  <strong>100% White-Label Active:</strong> Your brand is displayed exclusively on every invoice, quote, and report. All PestPilot watermarks are removed.
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleUpdateCompany} className="space-y-4 max-w-2xl">
               <div className="space-y-1.5">
                 <Label>Company Name *</Label>
@@ -355,16 +378,49 @@ export function SettingsClient({
       {/* Tab 2: Team & Trucks */}
       {activeTab === "team" && (
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
+          {/* Team Capacity & Seat Info Banner */}
+          <div className="p-4 rounded-xl border border-border bg-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Team Capacity:</span>
+                <Badge variant={currentTier === "FREE" && members.length >= 1 ? "secondary" : "default"}>
+                  {members.length} Active Member{members.length !== 1 ? "s" : ""}
+                </Badge>
+                {currentTier !== "FREE" && members.length > (currentTier === "PRO" ? 2 : 5) && (
+                  <Badge variant="outline" className="text-primary border-primary">
+                    +{members.length - (currentTier === "PRO" ? 2 : 5)} Extra Seat{members.length - (currentTier === "PRO" ? 2 : 5) > 1 ? "s" : ""} ($9/mo each)
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                {currentTier === "FREE" ? (
+                  <span>Free plan includes <strong>1 user</strong> (Solo Operator). Upgrade to Starter ($19/mo) to unlock multi-technician dispatch.</span>
+                ) : (
+                  <span>
+                    <strong>{currentTier === "PRO" ? "2 users" : "5 users"} included</strong> in your {currentTier === "PRO" ? "Starter" : "Professional"} plan. Extra technicians are billed at our affordable rate of just <strong>$9/mo per additional user</strong>.
+                  </span>
+                )}
+              </p>
+            </div>
+
+            {currentTier === "FREE" && members.length >= 1 ? (
+              <Button size="sm" onClick={() => setActiveTab("billing")}>
+                Upgrade Plan to Add Users
+              </Button>
+            ) : (
+              <Button size="sm" onClick={() => setInviteModalOpen(true)}>
+                <Users className="w-4 h-4 mr-1.5" /> Invite Member
+              </Button>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center pt-2">
             <div>
               <h2 className="text-lg font-bold text-foreground">Technicians & Staff</h2>
               <p className="text-xs text-muted-foreground">
-                Technicians only see jobs assigned to them.
+                Technicians only see jobs assigned to them in the field mobile app.
               </p>
             </div>
-            <Button size="sm" onClick={() => setInviteModalOpen(true)}>
-              <Users className="w-4 h-4 mr-1.5" /> Invite Member
-            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -393,9 +449,27 @@ export function SettingsClient({
             isOpen={inviteModalOpen}
             onClose={() => setInviteModalOpen(false)}
             title="Invite Team Member"
-            description="Enforced according to your current plan user limits"
+            description="Add a field technician or dispatcher to your company"
           >
             <form onSubmit={handleInviteMember} className="space-y-3">
+              {currentTier === "FREE" ? (
+                <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-400">
+                  <p className="font-semibold">User Limit Reached</p>
+                  <p className="mt-0.5 text-muted-foreground">
+                    Your Free plan includes 1 user. Please upgrade to Starter ($19/mo, includes 2 users + $9/mo per additional technician) to invite team members.
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-lg bg-muted text-xs text-muted-foreground">
+                  <p className="font-medium text-foreground">
+                    Plan Seat Policy: {currentTier === "PRO" ? "2 users" : "5 users"} included
+                  </p>
+                  <p className="mt-0.5">
+                    Additional technicians beyond included seats are billed at our affordable rate of just <strong>$9/mo per user</strong> (cancel or adjust anytime).
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <Label>Member Name</Label>
                 <Input
@@ -438,7 +512,7 @@ export function SettingsClient({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading || (currentTier === "FREE" && members.length >= 1)}>
                   {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Invite"}
                 </Button>
               </div>
@@ -457,11 +531,15 @@ export function SettingsClient({
                   Current Active Subscription
                 </span>
                 <div className="flex items-center gap-2 mt-1">
-                  <h2 className="text-2xl font-black text-foreground">PestPilot {currentTier} Plan</h2>
+                  <h2 className="text-2xl font-black text-foreground">
+                    PestPilot {currentTier === "PRO" ? "Starter" : currentTier === "BUSINESS" ? "Professional" : "Free"} Plan
+                  </h2>
                   <Badge variant="success">Active</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Enforces server-side limits on truck users and monthly jobs.
+                  {currentTier === "FREE" && "1 user included · 20 jobs/mo · 'Powered by PestPilot' watermark"}
+                  {currentTier === "PRO" && "2 users included · Unlimited jobs · $9/mo per additional user · 100% White-Label"}
+                  {currentTier === "BUSINESS" && "5 users included · Unlimited jobs · $9/mo per additional user · White-Label + SMS"}
                 </p>
               </div>
 
@@ -489,19 +567,22 @@ export function SettingsClient({
               <CardContent className="space-y-4">
                 <ul className="text-xs space-y-2 text-muted-foreground">
                   <li className="flex items-center gap-2 text-foreground font-semibold">
-                    <Check className="w-4 h-4 text-emerald-500" /> 1 User / Truck
+                    <Check className="w-4 h-4 text-emerald-500" /> 1 User / Solo Operator
                   </li>
                   <li className="flex items-center gap-2 text-foreground font-semibold">
                     <Check className="w-4 h-4 text-emerald-500" /> 20 Jobs / Month
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-500" /> Offline Mobile App
+                    <Check className="w-4 h-4 text-emerald-500" /> Offline Field Mobile PWA
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-500" /> EPA Treatment Logs
+                    <Check className="w-4 h-4 text-emerald-500" /> EPA Treatment Logs & Signatures
+                  </li>
+                  <li className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                    &bull; &quot;Powered by PestPilot&quot; watermark on invoices
                   </li>
                   <li className="flex items-center gap-2 text-muted-foreground/70">
-                    &bull; &quot;Powered by PestPilot&quot; footer
+                    &bull; Additional users not supported
                   </li>
                 </ul>
 
@@ -517,35 +598,44 @@ export function SettingsClient({
               </CardContent>
             </Card>
 
-            {/* Pro */}
+            {/* Starter / Pro */}
             <Card className={`border-2 relative ${currentTier === "PRO" ? "border-primary ring-2 ring-primary/20" : "border-primary/60"}`}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold uppercase tracking-wider">
-                Most Popular (1-3 Trucks)
+                Most Popular for Small Teams
               </div>
               <CardHeader>
-                <CardTitle className="text-lg">Pro</CardTitle>
-                <CardDescription>Small growing fleet</CardDescription>
+                <CardTitle className="text-lg">Starter</CardTitle>
+                <CardDescription>Solo operators and small growing teams</CardDescription>
                 <div className="pt-2">
-                  <span className="text-3xl font-black text-foreground">$29</span>
+                  <span className="text-3xl font-black text-foreground">$19</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
+                <p className="text-[11px] text-primary font-semibold mt-1">
+                  2 users included · $9/mo per additional user
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="text-xs space-y-2 text-muted-foreground">
                   <li className="flex items-center gap-2 text-foreground font-bold">
-                    <Check className="w-4 h-4 text-emerald-500" /> Up to 3 Users / Technicians
+                    <Check className="w-4 h-4 text-emerald-500" /> 2 Users Included
                   </li>
                   <li className="flex items-center gap-2 text-foreground font-bold">
-                    <Check className="w-4 h-4 text-emerald-500" /> Unlimited Jobs / Month
+                    <Check className="w-4 h-4 text-emerald-500" /> $9/mo Per Additional User
+                  </li>
+                  <li className="flex items-center gap-2 text-foreground font-bold">
+                    <Check className="w-4 h-4 text-emerald-500" /> Unlimited Jobs & Customers
+                  </li>
+                  <li className="flex items-center gap-2 text-foreground font-bold text-emerald-600 dark:text-emerald-400">
+                    <Check className="w-4 h-4 text-emerald-500" /> Your Brand on Every Invoice & Quote
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> Auto-Invoicing & Reminders
+                    <Check className="w-4 h-4 text-emerald-500" /> Chemical Tracking & Customer Portal
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> Stripe Card Payments
+                    <Check className="w-4 h-4 text-emerald-500" /> Recurring Service Plans & Auto-Invoicing
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> Remove &quot;Powered by&quot; branding
+                    <Check className="w-4 h-4 text-emerald-500" /> Stripe Credit Card Payments
                   </li>
                 </ul>
 
@@ -559,38 +649,50 @@ export function SettingsClient({
                     onClick={() => handleUpgradePlan("PRO")}
                     disabled={loading}
                   >
-                    Upgrade to Pro ($29/mo)
+                    Upgrade to Starter ($19/mo)
                   </Button>
                 )}
               </CardContent>
             </Card>
 
-            {/* Business */}
+            {/* Professional / Business */}
             <Card className={`border-2 ${currentTier === "BUSINESS" ? "border-primary" : "border-border"}`}>
               <CardHeader>
-                <CardTitle className="text-lg">Business</CardTitle>
-                <CardDescription>Established 4-10 truck companies</CardDescription>
+                <CardTitle className="text-lg">Professional</CardTitle>
+                <CardDescription>Growing fleets requiring full route visibility</CardDescription>
                 <div className="pt-2">
-                  <span className="text-3xl font-black text-foreground">$59</span>
+                  <span className="text-3xl font-black text-foreground">$39</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
+                <p className="text-[11px] text-primary font-semibold mt-1">
+                  5 users included · $9/mo per additional user
+                </p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="text-xs space-y-2 text-muted-foreground">
                   <li className="flex items-center gap-2 text-foreground font-bold">
-                    <Check className="w-4 h-4 text-emerald-500" /> Up to 10 Users / Trucks
+                    <Check className="w-4 h-4 text-emerald-500" /> 5 Users Included
                   </li>
                   <li className="flex items-center gap-2 text-foreground font-bold">
-                    <Check className="w-4 h-4 text-emerald-500" /> Unlimited Jobs & Customers
+                    <Check className="w-4 h-4 text-emerald-500" /> $9/mo Per Additional User
+                  </li>
+                  <li className="flex items-center gap-2 text-foreground font-bold">
+                    <Check className="w-4 h-4 text-emerald-500" /> Everything in Starter
+                  </li>
+                  <li className="flex items-center gap-2 text-foreground font-bold text-emerald-600 dark:text-emerald-400">
+                    <Check className="w-4 h-4 text-emerald-500" /> 100% White-Label Branding
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> SMS Appointment Reminders (Twilio)
+                    <Check className="w-4 h-4 text-emerald-500" /> SMS Reminders & Dispatch Notifications
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> Compliance PDF Export
+                    <Check className="w-4 h-4 text-emerald-500" /> Technician Scorecards & License Tracking
                   </li>
                   <li className="flex items-center gap-2 text-foreground">
-                    <Check className="w-4 h-4 text-emerald-500" /> Priority Support
+                    <Check className="w-4 h-4 text-emerald-500" /> EPA Compliance Audit PDF Exports
+                  </li>
+                  <li className="flex items-center gap-2 text-foreground">
+                    <Check className="w-4 h-4 text-emerald-500" /> Priority 24/7 Support
                   </li>
                 </ul>
 
@@ -605,7 +707,7 @@ export function SettingsClient({
                     onClick={() => handleUpgradePlan("BUSINESS")}
                     disabled={loading}
                   >
-                    Upgrade to Business ($59/mo)
+                    Upgrade to Professional ($39/mo)
                   </Button>
                 )}
               </CardContent>

@@ -118,6 +118,19 @@ export function PublicInvoiceClient({ invoice, paymentSuccess }: PublicInvoiceCl
           </div>
         )}
 
+        {/* Free Plan Notice */}
+        {isFreePlan && (
+          <div className="text-[11px] text-muted-foreground bg-muted/60 px-3.5 py-2 rounded-xl border border-border flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+              Generated with PestPilot Free Plan
+            </span>
+            <span className="text-[10px] text-muted-foreground/80 hidden sm:inline">
+              Custom white-label branding on Starter &amp; Professional
+            </span>
+          </div>
+        )}
+
         {/* Invoice Document Card */}
         <Card className="border-border shadow-xl overflow-hidden bg-card">
           <div className="p-6 sm:p-8 space-y-6">

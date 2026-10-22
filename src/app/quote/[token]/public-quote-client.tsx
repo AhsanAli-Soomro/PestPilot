@@ -103,6 +103,19 @@ export function PublicQuoteClient({ quote }: PublicQuoteClientProps) {
           </div>
         )}
 
+        {/* Free Plan Notice */}
+        {isFreePlan && (
+          <div className="text-[11px] text-muted-foreground bg-muted/60 px-3.5 py-2 rounded-xl border border-border flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-medium">
+              <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+              Generated with PestPilot Free Plan
+            </span>
+            <span className="text-[10px] text-muted-foreground/80 hidden sm:inline">
+              Custom white-label branding on Starter &amp; Professional
+            </span>
+          </div>
+        )}
+
         {isDeclined && (
           <div className="p-4 rounded-xl bg-destructive/15 border border-destructive/30 text-destructive flex items-center gap-3">
             <XCircle className="w-6 h-6 shrink-0" />

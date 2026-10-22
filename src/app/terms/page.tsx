@@ -36,9 +36,9 @@ export default function TermsPage() {
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">EPA Label is Law</h4>
+              <h4 className="text-xs font-bold text-foreground">Pure Software Immunity</h4>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Applicator is solely responsible for verifying pesticide EPA registrations and state licensing.
+                PestPilot is purely an independent software provider. Government laws, EPA rules &amp; chemical safety are 100% the operator&apos;s sole responsibility.
               </p>
             </div>
           </div>
@@ -48,9 +48,9 @@ export default function TermsPage() {
               <Scale className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">Clear Plan Limits</h4>
+              <h4 className="text-xs font-bold text-foreground">Affordable Plan Seats</h4>
               <p className="text-[11px] text-muted-foreground mt-0.5">
-                Transparent Free, Pro ($29/mo), and Business ($59/mo) tiers with no hidden cancellation fees.
+                Free ($0), Starter ($19/mo for 2 users), Professional ($39/mo for 5 users), and extra seats at just $9/mo each.
               </p>
             </div>
           </div>
@@ -74,7 +74,7 @@ export default function TermsPage() {
           <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">1</span>
-              Acceptance of Terms & Eligibility
+              Acceptance of Terms &amp; Eligibility
             </h2>
             <p>
               These Terms of Service (&quot;Terms&quot;) constitute a legally binding contract between PestPilot (&quot;Company,&quot; &quot;we,&quot; &quot;our&quot;) and the individual or business entity (&quot;Customer,&quot; &quot;Subscriber,&quot; &quot;You&quot;) accessing or using the PestPilot web and progressive mobile application (the &quot;Service&quot;).
@@ -85,28 +85,65 @@ export default function TermsPage() {
           </section>
 
           {/* Section 2 */}
-          <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
+          <section className="space-y-4 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">2</span>
-              Pesticide Regulation & FIFRA Compliance Disclaimer
+              Independent Software Provider Status, Absolute Regulatory Immunity &amp; Sole Operator Legal Responsibility
             </h2>
+            
             <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-foreground space-y-2">
               <div className="flex items-center gap-2 font-bold text-amber-700 dark:text-amber-400">
-                <AlertOctagon className="w-4 h-4 shrink-0" />
-                <span>CRITICAL REGULATORY COMPLIANCE NOTICE</span>
+                <AlertOctagon className="w-5 h-5 shrink-0" />
+                <span className="text-xs uppercase tracking-wider">CRITICAL LEGAL NOTICE &amp; REGULATORY EXCULPATION</span>
               </div>
-              <p className="text-[11px] text-muted-foreground">
-                <strong>THE PESTICIDE LABEL IS FEDERAL LAW.</strong> Under the Federal Insecticide, Fungicide, and Rodenticide Act (FIFRA, 7 U.S.C. § 136 et seq.), using any registered pesticide in a manner inconsistent with its labeling is a violation of federal law.
+              <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <strong>PESTPILOT IS EXCLUSIVELY AN INDEPENDENT SOFTWARE TECHNOLOGY PROVIDER.</strong> We are not a pest control operator, exterminator, pesticide applicator, chemical manufacturer, or regulatory body. All governmental laws, regulations, and chemical safety mandates apply strictly to the licensed operator/subscriber—NOT to PestPilot or its software creators.
               </p>
             </div>
-            <p>
-              PestPilot provides software recordkeeping tools allowing operators to log target pests, chemical trade names, dilution concentrations, and EPA Registration Numbers. <strong>PestPilot is not a chemical advisory service, pesticide manufacturer, or regulatory body.</strong>
-            </p>
-            <ul className="list-disc pl-5 space-y-1">
-              <li>You and your individual certified applicators bear sole legal responsibility for verifying that chemicals applied match label specifications, target pests, and approved application zones.</li>
-              <li>You are responsible for ensuring personal protective equipment (PPE) compliance, re-entry intervals (REI), and proper disposal of pesticide containers.</li>
-              <li>PestPilot disclaims all liability resulting from misapplication, chemical drift, improper dilution rates, chemical run-off, or regulatory citations issued by state or federal departments of agriculture.</li>
-            </ul>
+
+            <div className="space-y-2.5">
+              <h3 className="font-bold text-foreground text-xs">2.1 Pure Software Technology Provider</h3>
+              <p>
+                PestPilot develops, licenses, and maintains cloud-based productivity software designed for customer scheduling, invoicing, CRM, and digital recordkeeping. PestPilot does not perform physical pest control services, does not inspect customer premises, does not recommend specific chemical treatments or dosages, and does not sell or distribute chemical substances.
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              <h3 className="font-bold text-foreground text-xs">2.2 Exclusive Operator Responsibility for All Government Laws &amp; Regulations</h3>
+              <p>
+                Compliance with ANY AND ALL federal, state, provincial, municipal, and international laws, regulations, codes, and administrative standards—including but not limited to:
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>The Federal Insecticide, Fungicide, and Rodenticide Act (FIFRA, 7 U.S.C. § 136 et seq.) and Environmental Protection Agency (EPA) product labels (&quot;The Label is the Law&quot;);</li>
+                <li>State Departments of Agriculture, Structural Pest Control Boards (SPCB), and local commercial pesticide applicator licensing and certification rules;</li>
+                <li>Occupational Safety and Health Administration (OSHA) hazard communication, worker protection standards, and Personal Protective Equipment (PPE) requirements;</li>
+                <li>Clean Water Act (CWA), groundwater protection, chemical drift, runoff containment, and hazardous waste disposal statutes;</li>
+                <li>Consumer protection, customer notifications, and mandated re-entry interval (REI) disclosures;</li>
+              </ul>
+              <p>
+                is the <strong>100% sole, exclusive, non-delegable, and absolute legal responsibility of the Subscriber and its individual certified applicators</strong>. The availability of software forms, pre-populated fields, or EPA registration input templates within PestPilot does not constitute regulatory certification, chemical endorsement, or legal advice.
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              <h3 className="font-bold text-foreground text-xs">2.3 Complete Immunity from Regulatory Citations, Fines &amp; Investigations</h3>
+              <p>
+                In the event that any government agency, environmental regulator, state agricultural inspector, or law enforcement authority conducts an investigation, issues a citation, levies fines, revokes licenses, or initiates civil or criminal enforcement actions against Subscriber or its technicians, <strong>PestPilot, its founders, developers, officers, shareholders, and contractors shall bear ZERO liability, financial penalty, or joint culpability whatsoever.</strong>
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              <h3 className="font-bold text-foreground text-xs">2.4 Comprehensive Defense, Indemnification &amp; Hold Harmless Agreement</h3>
+              <p className="uppercase text-[11px] font-semibold text-foreground">
+                YOU EXPRESSLY AGREE TO DEFEND, INDEMNIFY, AND HOLD COMPLETELY HARMLESS PESTPILOT AND ITS FOUNDERS, OWNERS, DIRECTORS, EMPLOYEES, DEVELOPERS, AND AGENTS FROM AND AGAINST ANY AND ALL CLAIMS, LOSSES, LIABILITIES, DAMAGES, GOVERNMENT FINES, EPA PENALTIES, LAWSUITS, CITATIONS, COSTS, AND REASONABLE ATTORNEY&apos;S FEES ARISING DIRECTLY OR INDIRECTLY FROM:
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Any chemical application, pest extermination, termite treatment, wildlife removal, or field work conducted by Subscriber or its employees;</li>
+                <li>Any chemical drift, contamination, spill, environmental damage, property damage, personal injury, toxic exposure, or pet harm;</li>
+                <li>Any failure by Subscriber or its technicians to obtain, renew, or maintain valid commercial pesticide licenses, insurance coverage, or permits;</li>
+                <li>Any regulatory audit, inquiry, citation, or enforcement action brought by any government entity against Subscriber.</li>
+              </ul>
+            </div>
           </section>
 
           {/* Section 3 */}
@@ -187,15 +224,15 @@ export default function TermsPage() {
           <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">7</span>
-              Subscriptions, Plan Limits & Cancellation
+              Subscriptions, Affordable Seat Pricing &amp; Cancellation
             </h2>
             <p>
               PestPilot provides three subscription tiers billed on a monthly recurring basis:
             </p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong>Free Plan:</strong> Limited to 1 team member and 20 completed jobs per calendar month. Includes the mandatory &quot;Powered by PestPilot&quot; footer on public quote and invoice links.</li>
-              <li><strong>Pro Plan ($29/month):</strong> Up to 3 team members, unlimited jobs, custom invoice branding, and removal of the viral badge.</li>
-              <li><strong>Business Plan ($59/month):</strong> Up to 10 team members, priority support, unlimited routes, and complete compliance reporting.</li>
+              <li><strong>Free Plan ($0/month):</strong> 1 user included (Solo Operator) and 20 completed jobs per calendar month. Includes the mandatory &quot;Powered by PestPilot&quot; footer watermark on public quote and invoice links. Custom white-label branding and additional user seats are locked.</li>
+              <li><strong>Starter Plan ($19/month):</strong> 2 users included, with additional user seats available for just <strong>$9/month per additional user</strong>. Unlimited jobs and customers, and 100% white-label custom company branding (your brand on every invoice, quote, and report).</li>
+              <li><strong>Professional Plan ($39/month):</strong> 5 users included, with additional user seats at just <strong>$9/month per additional user</strong>. Unlimited jobs and customers, automated SMS appointment reminders, license tracking, technician scorecards, route visibility, and priority support.</li>
             </ul>
             <p>
               You may upgrade, downgrade, or cancel your subscription at any time via your Settings billing portal. Downgrades or cancellations take effect at the conclusion of the active billing cycle; no partial refunds are issued for unused days in a billing period.
@@ -206,7 +243,7 @@ export default function TermsPage() {
           <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">8</span>
-              Offline Field Mode & Conflict Resolution
+              Offline Field Mode &amp; Conflict Resolution
             </h2>
             <p>
               Technicians operating in offline field mode store data in local browser storage (IndexedDB). When the device regains internet connectivity, updates sync back to the cloud.
@@ -228,13 +265,13 @@ export default function TermsPage() {
           <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">9</span>
-              Limitation of Liability
+              Limitation of Liability &amp; Startup Protection
             </h2>
             <p className="uppercase text-[11px] font-semibold text-foreground">
-              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL PESTPILOT, ITS OFFICERS, EMPLOYEES, OR SUPPLIERS BE LIABLE FOR ANY INDIRECT, PUNITIVE, INCIDENTAL, SPECIAL, CONSEQUENTIAL DAMAGES, OR LOSS OF BUSINESS PROFITS, GOODWILL, DATA, OR ENVIRONMENTAL REMEDIATION COSTS ARISING OUT OF OR IN CONNECTION WITH THE USE OF OR INABILITY TO USE THE SERVICE.
+              TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL PESTPILOT, ITS FOUNDERS, OFFICERS, EMPLOYEES, DEVELOPERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, PUNITIVE, SPECIAL, INCIDENTAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES, OR LOSS OF BUSINESS PROFITS, GOODWILL, DATA, REGULATORY FINES, ENVIRONMENTAL CONTAMINATION, CHEMICAL REMEDIATION COSTS, OR LICENSING CITATIONS ARISING OUT OF OR IN CONNECTION WITH THE USE OF OR INABILITY TO USE THE SERVICE.
             </p>
             <p>
-              OUR TOTAL AGGREGATE LIABILITY UNDER THESE TERMS SHALL NOT EXCEED THE TOTAL FEES ACTUALLY PAID BY YOU TO PESTPILOT DURING THE THREE (3) MONTHS IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO LIABILITY.
+              OUR TOTAL AGGREGATE LIABILITY UNDER THESE TERMS FOR ANY AND ALL CLAIMS WHATSOEVER SHALL NOT EXCEED THE TOTAL SOFTWARE FEES ACTUALLY PAID BY YOU TO PESTPILOT DURING THE ONE (1) MONTH IMMEDIATELY PRECEDING THE EVENT GIVING RISE TO LIABILITY, OR FIFTY US DOLLARS ($50.00), WHICHEVER IS LESS.
             </p>
           </section>
 

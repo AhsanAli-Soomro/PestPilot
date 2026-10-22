@@ -44,7 +44,7 @@ export async function createSubscriptionCheckoutAction(planTier: "PRO" | "BUSINE
               currency: "usd",
               product_data: {
                 name: `PestPilot ${limits.name} Plan`,
-                description: `PestPilot Field Service Subscription (${limits.maxUsers} users, unlimited jobs)`,
+                description: `PestPilot Field Service Subscription (${limits.maxUsers} users included, +$9/mo per additional user, unlimited jobs)`,
               },
               unit_amount: limits.priceCents,
               recurring: { interval: "month" },

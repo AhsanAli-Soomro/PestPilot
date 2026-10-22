@@ -268,28 +268,28 @@ export function AdminDashboardClient({
 
                 <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/5">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-foreground">Pro Tier</span>
+                    <span className="text-sm font-semibold text-foreground">Starter (Pro)</span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400">
-                      $29/mo
+                      $19/mo
                     </span>
                   </div>
                   <div className="text-2xl font-black mt-2 text-foreground">
                     {stats.tierCounts.PRO || 0}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Up to 3 trucks + EPA logs</p>
+                  <p className="text-xs text-muted-foreground mt-1">2 users included + $9/mo extra</p>
                 </div>
 
                 <div className="p-4 rounded-xl border border-indigo-500/30 bg-indigo-500/5">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-foreground">Business Tier</span>
+                    <span className="text-sm font-semibold text-foreground">Professional</span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-600 dark:text-indigo-400">
-                      $59/mo
+                      $39/mo
                     </span>
                   </div>
                   <div className="text-2xl font-black mt-2 text-foreground">
                     {stats.tierCounts.BUSINESS || 0}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">Up to 5 trucks + SMS</p>
+                  <p className="text-xs text-muted-foreground mt-1">5 users included + $9/mo extra</p>
                 </div>
               </div>
             </CardContent>

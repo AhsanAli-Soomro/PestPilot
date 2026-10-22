@@ -14,20 +14,29 @@ export const PLAN_LIMITS = {
     priceCents: 0,
     priceId: "",
     name: "Free",
+    additionalUserPriceCents: 0,
+    additionalUserPriceLabel: "N/A",
+    whiteLabelBranding: false,
   },
   PRO: {
-    maxUsers: 3,
+    maxUsers: 2,
     maxJobsPerMonth: Infinity,
-    priceCents: 2900,
-    priceId: process.env.STRIPE_PRO_PRICE_ID || "price_pro_dummy",
-    name: "Pro",
+    priceCents: 1900,
+    priceId: process.env.STRIPE_PRO_PRICE_ID || "price_starter_dummy",
+    name: "Starter",
+    additionalUserPriceCents: 900,
+    additionalUserPriceLabel: "$9/mo per additional user",
+    whiteLabelBranding: true,
   },
   BUSINESS: {
-    maxUsers: 10,
+    maxUsers: 5,
     maxJobsPerMonth: Infinity,
-    priceCents: 5900,
-    priceId: process.env.STRIPE_BUSINESS_PRICE_ID || "price_business_dummy",
-    name: "Business",
+    priceCents: 3900,
+    priceId: process.env.STRIPE_BUSINESS_PRICE_ID || "price_professional_dummy",
+    name: "Professional",
+    additionalUserPriceCents: 900,
+    additionalUserPriceLabel: "$9/mo per additional user",
+    whiteLabelBranding: true,
   },
 };
 
@@ -37,7 +46,14 @@ export const PLAN_LIMITS = {
 export async function checkPlanLimits(
   organizationId: string,
   type: "jobs" | "users"
-): Promise<{ allowed: boolean; reason?: string; current: number; max: number }> {
+): Promise<{
+  allowed: boolean;
+  reason?: string;
+  current: number;
+  max: number;
+  isAdditional?: boolean;
+  additionalCostPerMonth?: number;
+}> {
   const org = await db.organization.findUnique({
     where: { id: organizationId },
     include: {
@@ -54,15 +70,27 @@ export async function checkPlanLimits(
     const userCount = await db.membership.count({
       where: { organizationId, deletedAt: null },
     });
-    if (userCount >= limits.maxUsers) {
+
+    if (tier === PlanTier.FREE && userCount >= limits.maxUsers) {
       return {
         allowed: false,
-        reason: `Your ${tier} plan only supports up to ${limits.maxUsers} user(s). Upgrade to add more technicians.`,
+        reason: "Your Free plan includes 1 user. Upgrade to Starter ($19/mo, 2 users included + $9/mo per additional user) to invite technicians.",
         current: userCount,
         max: limits.maxUsers,
       };
     }
-    return { allowed: true, current: userCount, max: limits.maxUsers };
+
+    // On Starter (PRO) and Professional (BUSINESS), owners can add extra team members seamlessly at $9/mo each
+    const isAdditional = userCount >= limits.maxUsers;
+    const extraCount = Math.max(0, userCount - limits.maxUsers);
+
+    return {
+      allowed: true,
+      current: userCount,
+      max: limits.maxUsers,
+      isAdditional,
+      additionalCostPerMonth: extraCount * 9,
+    };
   }
 
   if (type === "jobs") {

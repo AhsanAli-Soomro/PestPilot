@@ -74,10 +74,13 @@ export default function PrivacyPage() {
           <section className="space-y-3 p-6 rounded-2xl bg-card border border-border">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">1</span>
-              Introduction & Scope
+              Introduction &amp; Scope
             </h2>
             <p>
               PestPilot (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) provides a cloud-based and offline-capable field-service management platform tailored specifically for pest control operators, extermination teams, and independent field technicians (the &quot;Service&quot;).
+            </p>
+            <p>
+              <strong>Data Processor Role:</strong> PestPilot operates strictly as an independent software technology developer and data processor. The subscribing pest control company or operator acts as the independent data controller. PestPilot does not engage in pest extermination, chemical sales, or regulatory enforcement. All pesticide application compliance, licensing, and operational duties remain solely with the subscribing business.
             </p>
             <p>
               This Privacy Policy explains how we collect, use, store, share, and protect information when you register an account, utilize our technician mobile Progressive Web App (PWA), manage customers and service plans, generate chemical application reports, or send automated service and invoice notifications.

@@ -242,13 +242,13 @@ export default function LandingPage() {
       <section id="pricing" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto w-full">
         <div className="text-center space-y-3 mb-14">
           <Badge variant="secondary" className="text-xs font-bold uppercase tracking-wider">
-            Transparent Pricing
+            Affordable & Transparent Pricing
           </Badge>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
             Fair Plans for Growing Pest Control Fleets
           </h2>
           <p className="text-muted-foreground text-sm max-w-xl mx-auto">
-            No long-term contracts. Upgrade or downgrade anytime with one click.
+            No expensive lock-in or high seat fees. Add extra technicians anytime for just $9/mo.
           </p>
         </div>
 
@@ -257,8 +257,8 @@ export default function LandingPage() {
           <Card className="border-border p-6 flex flex-col justify-between">
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold">Free</h3>
-                <p className="text-xs text-muted-foreground">Solo pest operators</p>
+                <h3 className="text-lg font-bold">Free Solo</h3>
+                <p className="text-xs text-muted-foreground">Solo operators getting started</p>
                 <div className="pt-3">
                   <span className="text-4xl font-black">$0</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
@@ -267,7 +267,7 @@ export default function LandingPage() {
 
               <ul className="text-xs space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2 text-foreground font-semibold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 1 Technician / Truck
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 1 Technician / Solo Operator
                 </li>
                 <li className="flex items-center gap-2 text-foreground font-semibold">
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 20 Jobs / Month
@@ -276,7 +276,13 @@ export default function LandingPage() {
                   <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Offline Mobile App
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> EPA Treatment Logs
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> EPA Treatment Logs & Signatures
+                </li>
+                <li className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
+                  &bull; &quot;Powered by PestPilot&quot; watermark on invoices
+                </li>
+                <li className="flex items-center gap-2 text-muted-foreground/70">
+                  &bull; Custom branding & extra seats locked
                 </li>
               </ul>
             </div>
@@ -288,37 +294,46 @@ export default function LandingPage() {
             </Link>
           </Card>
 
-          {/* Pro */}
+          {/* Starter */}
           <Card className="border-primary ring-2 ring-primary/20 p-6 flex flex-col justify-between relative shadow-xl">
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold uppercase tracking-wider">
-              Most Popular (1-3 Trucks)
+              Most Popular for Small Teams
             </div>
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold">Pro</h3>
-                <p className="text-xs text-muted-foreground">Small fleet</p>
+                <h3 className="text-lg font-bold">Starter</h3>
+                <p className="text-xs text-muted-foreground">Small teams replacing spreadsheets</p>
                 <div className="pt-3">
-                  <span className="text-4xl font-black">$29</span>
+                  <span className="text-4xl font-black">$19</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
+                <p className="text-[11px] text-primary font-semibold mt-1">
+                  2 users included · $9/mo per additional user
+                </p>
               </div>
 
               <ul className="text-xs space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2 text-foreground font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Up to 3 Technicians / Trucks
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 2 Users Included
                 </li>
                 <li className="flex items-center gap-2 text-foreground font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unlimited Jobs / Month
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> $9/mo Per Additional User
+                </li>
+                <li className="flex items-center gap-2 text-foreground font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unlimited Jobs & Customers
+                </li>
+                <li className="flex items-center gap-2 text-foreground font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Your Brand on Every Invoice & Quote
                 </li>
                 <li className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Recurring Service Plans
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Chemical Tracking & Customer Portal
                 </li>
                 <li className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Instant PDF Invoices & Card Pay
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Recurring Service Plans & Auto-Invoicing
                 </li>
                 <li className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> White-label (No PestPilot branding)
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Instant PDF Invoices & Card Payments
                 </li>
               </ul>
             </div>
@@ -330,30 +345,42 @@ export default function LandingPage() {
             </Link>
           </Card>
 
-          {/* Business */}
+          {/* Professional */}
           <Card className="border-border p-6 flex flex-col justify-between">
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold">Business</h3>
-                <p className="text-xs text-muted-foreground">4-10 truck companies</p>
+                <h3 className="text-lg font-bold">Professional</h3>
+                <p className="text-xs text-muted-foreground">Growing fleets needing full visibility</p>
                 <div className="pt-3">
-                  <span className="text-4xl font-black">$59</span>
+                  <span className="text-4xl font-black">$39</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
+                <p className="text-[11px] text-primary font-semibold mt-1">
+                  5 users included · $9/mo per additional user
+                </p>
               </div>
 
               <ul className="text-xs space-y-2 text-muted-foreground">
                 <li className="flex items-center gap-2 text-foreground font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Up to 10 Technicians / Trucks
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 5 Users Included
                 </li>
                 <li className="flex items-center gap-2 text-foreground font-bold">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Unlimited Jobs & Customers
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> $9/mo Per Additional User
+                </li>
+                <li className="flex items-center gap-2 text-foreground font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Everything in Starter
+                </li>
+                <li className="flex items-center gap-2 text-foreground font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> 100% White-Label Branding
                 </li>
                 <li className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> SMS Appointment Reminders (Twilio)
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> SMS Reminders & Dispatch Text Alerts
                 </li>
                 <li className="flex items-center gap-2 text-foreground">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> EPA Compliance Audit PDF Exports
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> License Tracking & Technician Scorecards
+                </li>
+                <li className="flex items-center gap-2 text-foreground">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Advanced Routing & Priority Support
                 </li>
               </ul>
             </div>
@@ -382,9 +409,16 @@ export default function LandingPage() {
           </Card>
 
           <Card className="p-4 border-border">
-            <h4 className="font-bold text-foreground">Does PestPilot meet state pesticide regulatory requirements?</h4>
+            <h4 className="font-bold text-foreground">What is PestPilot&apos;s legal role regarding pesticide regulations and chemical compliance?</h4>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              Yes. Each treatment log records EPA registration numbers, exact products, dilution ratios, target pests, areas treated, applicator license number, and customer/applicator signatures. You can export complete CSV and PDF compliance audit reports in seconds.
+              PestPilot is an independent software technology platform and cloud-based recordkeeping tool. PestPilot is not a pest control operator, exterminator, or pesticide applicator. All compliance with federal (EPA/FIFRA), state applicator licensing, worker protection standards, chemical drift, and environmental safety laws is the 100% sole legal responsibility of the subscribing licensed operator.
+            </p>
+          </Card>
+
+          <Card className="p-4 border-border">
+            <h4 className="font-bold text-foreground">Can I add extra technicians if my team grows beyond the included plan seats?</h4>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              Yes! Both our Starter and Professional plans allow company owners to add additional technicians anytime at our affordable rate of just $9/month per extra user, without being locked into expensive enterprise pricing.
             </p>
           </Card>
 

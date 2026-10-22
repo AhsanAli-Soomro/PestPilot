@@ -66,7 +66,7 @@ export async function getPlatformOverviewAction() {
     ]);
 
     // Calculate approximate MRR
-    // Free: $0, Pro: $29/mo, Business: $59/mo
+    // Free: $0, Starter (PRO): $19/mo, Professional (BUSINESS): $39/mo
     let mrr = 0;
     const tierCounts: Record<string, number> = {
       FREE: 0,
@@ -76,8 +76,8 @@ export async function getPlatformOverviewAction() {
 
     for (const group of orgsByTier) {
       tierCounts[group.planTier] = group._count.id;
-      if (group.planTier === PlanTier.PRO) mrr += group._count.id * 29;
-      if (group.planTier === PlanTier.BUSINESS) mrr += group._count.id * 59;
+      if (group.planTier === PlanTier.PRO) mrr += group._count.id * 19;
+      if (group.planTier === PlanTier.BUSINESS) mrr += group._count.id * 39;
     }
 
     return {
