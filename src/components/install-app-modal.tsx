@@ -190,3 +190,4 @@ export function InstallAppModal({ isOpen, onClose }: InstallAppModalProps) {
     </Modal>
   );
 }
+
