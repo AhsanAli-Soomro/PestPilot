@@ -37,23 +37,23 @@ PestPilot includes a `docker-compose.yml` file for zero-config local PostgreSQL.
 
 ---
 
-### 2. Production Database (Neon Hosted PostgreSQL)
+### 2. Production Database (Neon Hosted PostgreSQL or Prisma Postgres)
 
-Your live Neon PostgreSQL instance is pre-configured and connected:
+For production, connect a hosted PostgreSQL instance (such as Neon or Vercel Prisma Postgres):
 
-- **Database Host:** `ep-square-art-b50bjud9-pooler.c-7.us-east-2.aws.neon.tech`
-- **Database Name:** `PastSite`
-- **Live Connection String:**
+- **Database Host:** `your-neon-host.aws.neon.tech`
+- **Database Name:** `your_database_name`
+- **Live Connection String (Example):**
   ```env
-  DATABASE_URL="postgresql://neondb_owner:npg_LphFQwI7qPX1@ep-square-art-b50bjud9-pooler.c-7.us-east-2.aws.neon.tech/PastSite?sslmode=require&channel_binding=require"
+  DATABASE_URL="postgresql://neondb_owner:your-neon-password@your-endpoint.neon.tech/neondb?sslmode=require"
   ```
 - **Local vs Live Separation:**
   - Local development runs against your local Docker PostgreSQL in `.env` (`localhost:5432`).
-  - Production deployments (Vercel / cloud) automatically use `.env.production` containing the Neon connection.
-  - To sync or seed Neon from your CLI at any time:
+  - Production deployments (Vercel / cloud) use environment variables set in the Vercel dashboard.
+  - To sync or seed any database from your CLI:
     ```bash
-    pnpm db:neon:push   # Pushes Prisma schema to Neon
-    pnpm db:neon:seed   # Seeds Apex Pest Solutions demo fleet into Neon
+    pnpm db:push   # Pushes Prisma schema
+    pnpm db:seed   # Seeds Apex Pest Solutions demo fleet
     ```
 
 ---
