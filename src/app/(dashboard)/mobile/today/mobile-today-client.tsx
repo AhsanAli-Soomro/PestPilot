@@ -13,6 +13,7 @@ import { formatMoney } from "@/lib/utils";
 import { localDb } from "@/lib/offline/db";
 import { syncEngine } from "@/lib/offline/sync-engine";
 import { updateJobStatusAction, submitTreatmentLogAction } from "@/actions/jobs";
+import { AiPestIdentifier } from "@/components/ai-pest-identifier";
 import {
   Navigation,
   Phone,
@@ -28,6 +29,9 @@ import {
   Sparkles,
   Wind,
   ExternalLink,
+  MessageSquare,
+  CheckSquare,
+  Scan,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -86,6 +90,43 @@ export function MobileTodayClient({
   const [paymentAmount, setPaymentAmount] = React.useState("115.00");
   const [paymentMethod, setPaymentMethod] = React.useState<"CASH" | "CARD" | "CHECK">("CARD");
   const [recordPayment, setRecordPayment] = React.useState(false);
+
+  // Advanced Technician Checklist state
+  const [siteInspectedMap, setSiteInspectedMap] = React.useState<Record<string, boolean>>({});
+  const [beforePhotosMap, setBeforePhotosMap] = React.useState<Record<string, string[]>>({});
+  const [afterPhotosMap, setAfterPhotosMap] = React.useState<Record<string, string[]>>({});
+  const [isAiModalOpen, setIsAiModalOpen] = React.useState(false);
+  const [targetJobForAi, setTargetJobForAi] = React.useState<any | null>(null);
+
+  const toggleSiteInspection = (jobId: string) => {
+    setSiteInspectedMap((prev) => ({
+      ...prev,
+      [jobId]: !prev[jobId],
+    }));
+    toast.success("Site inspection status updated");
+  };
+
+  const handleCaptureChecklistPhoto = (jobId: string, type: "before" | "after", e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (readerEvent) => {
+        const base64 = readerEvent.target?.result as string;
+        if (base64) {
+          if (type === "before") {
+            setBeforePhotosMap((prev) => ({ ...prev, [jobId]: [...(prev[jobId] || []), base64] }));
+            setPhotos((prev) => [...prev, base64]);
+            toast.success("Before photo attached to job");
+          } else {
+            setAfterPhotosMap((prev) => ({ ...prev, [jobId]: [...(prev[jobId] || []), base64] }));
+            setPhotos((prev) => [...prev, base64]);
+            toast.success("After photo attached to job");
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // Sync initial jobs to local IndexedDB for offline resilience
   React.useEffect(() => {
@@ -453,27 +494,187 @@ export function MobileTodayClient({
                   </div>
 
                   {/* Primary One-Tap Actions for Drivers / Technicians */}
-                  <div className="grid grid-cols-2 gap-2 pt-1">
+                  <div className="grid grid-cols-3 gap-2 pt-1">
                     <a
                       href={`https://maps.google.com/?q=${encodeURIComponent(
                         `${property?.address || ""}, ${property?.city || ""}, ${property?.state || ""} ${property?.postalCode || ""}`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
+                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
                     >
-                      <Navigation className="w-4 h-4 text-primary" />
+                      <Navigation className="w-3.5 h-3.5 text-primary" />
                       Navigate
                     </a>
 
                     <a
                       href={customer?.phone ? `tel:${customer.phone}` : "#"}
-                      className="flex items-center justify-center gap-2 h-12 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
+                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-secondary hover:bg-secondary/80 text-foreground font-bold text-xs border border-border touch-target transition-all"
                     >
-                      <Phone className="w-4 h-4 text-primary" />
-                      Call Customer
+                      <Phone className="w-3.5 h-3.5 text-primary" />
+                      Call
+                    </a>
+
+                    <a
+                      href={`https://api.whatsapp.com/send?phone=${(customer?.phone || "").replace(/[^0-9]/g, "")}&text=${encodeURIComponent(
+                        `Hello ${customer?.firstName || "Customer"}, this is your PestPilot technician ${userName}. I am on my way to your property for your scheduled pest control service (${job.title}).`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-1.5 h-11 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs touch-target transition-all"
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      WhatsApp
                     </a>
                   </div>
+
+                  {/* Interactive Technician Checklist & Progress (PestPilot Mobile Standard) */}
+                  {(() => {
+                    const step1 = job.status !== "SCHEDULED"; // GPS Check-in (En Route / Arrived)
+                    const step2 = !!siteInspectedMap[job.id] || isCompleted; // Site Inspection
+                    const step3 = (beforePhotosMap[job.id]?.length || 0) > 0 || isCompleted; // Before Photos
+                    const step4 = (job.treatmentLogs && job.treatmentLogs.length > 0) || isCompleted; // Treatment & Chemical Record
+                    const step5 = (afterPhotosMap[job.id]?.length || 0) > 0 || isCompleted; // After Photos
+                    const step6 = !!signature || isCompleted; // Customer Signature
+                    const step7 = isCompleted; // Complete Service Report
+
+                    const completedCount = [step1, step2, step3, step4, step5, step6, step7].filter(Boolean).length;
+                    const progressPercent = Math.round((completedCount / 7) * 100);
+
+                    return (
+                      <div className="p-3.5 rounded-xl bg-card border border-border space-y-3">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-foreground flex items-center gap-1.5">
+                            <CheckSquare className="w-4 h-4 text-primary" /> Technician Checklist
+                          </span>
+                          <span className="font-black text-primary bg-primary/10 px-2 py-0.5 rounded-full text-[11px]">
+                            {completedCount}/7 ({progressPercent}%)
+                          </span>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                          <div
+                            className="bg-primary h-full transition-all duration-300"
+                            style={{ width: `${progressPercent}%` }}
+                          />
+                        </div>
+
+                        {/* 7 Interactive Checklist Items */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                          {/* 1. GPS Check-in */}
+                          <div
+                            onClick={() => {
+                              if (job.status === "SCHEDULED") handleUpdateStatus(job.id, "EN_ROUTE");
+                            }}
+                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                              step1 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <input type="checkbox" checked={step1} readOnly className="accent-primary rounded" />
+                            <span>GPS Check-in</span>
+                          </div>
+
+                          {/* 2. Site Inspection */}
+                          <div
+                            onClick={() => toggleSiteInspection(job.id)}
+                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                              step2 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <input type="checkbox" checked={step2} readOnly className="accent-primary rounded" />
+                            <span>Site Inspection</span>
+                          </div>
+
+                          {/* 3. Before Photos */}
+                          <label className={`flex items-center justify-between p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                            step3 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <input type="checkbox" checked={step3} readOnly className="accent-primary rounded" />
+                              <span>Before Photos {beforePhotosMap[job.id]?.length ? `(${beforePhotosMap[job.id].length})` : ""}</span>
+                            </div>
+                            <Camera className="w-3.5 h-3.5 opacity-70" />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              capture="environment"
+                              onChange={(e) => handleCaptureChecklistPhoto(job.id, "before", e)}
+                              className="hidden"
+                            />
+                          </label>
+
+                          {/* 4. Treatment & Chemical Record */}
+                          <div
+                            onClick={() => setActiveJobForLog(job)}
+                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                              step4 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <input type="checkbox" checked={step4} readOnly className="accent-primary rounded" />
+                            <span>Chemical Record</span>
+                          </div>
+
+                          {/* 5. After Photos */}
+                          <label className={`flex items-center justify-between p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                            step5 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                          }`}>
+                            <div className="flex items-center gap-2">
+                              <input type="checkbox" checked={step5} readOnly className="accent-primary rounded" />
+                              <span>After Photos {afterPhotosMap[job.id]?.length ? `(${afterPhotosMap[job.id].length})` : ""}</span>
+                            </div>
+                            <Camera className="w-3.5 h-3.5 opacity-70" />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              capture="environment"
+                              onChange={(e) => handleCaptureChecklistPhoto(job.id, "after", e)}
+                              className="hidden"
+                            />
+                          </label>
+
+                          {/* 6. Customer Signature */}
+                          <div
+                            onClick={() => setActiveJobForLog(job)}
+                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-colors cursor-pointer ${
+                              step6 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <input type="checkbox" checked={step6} readOnly className="accent-primary rounded" />
+                            <span>Customer Signature</span>
+                          </div>
+
+                          {/* 7. Complete Service Report */}
+                          <div
+                            onClick={() => setActiveJobForLog(job)}
+                            className={`flex items-center gap-2 p-1.5 rounded-lg border transition-colors cursor-pointer sm:col-span-2 ${
+                              step7 ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold" : "bg-muted/40 border-border text-foreground hover:bg-muted"
+                            }`}
+                          >
+                            <input type="checkbox" checked={step7} readOnly className="accent-primary rounded" />
+                            <span>Complete Service Report (EPA PDF)</span>
+                          </div>
+                        </div>
+
+                        {/* AI Pest Scanner Quick Launch */}
+                        <div className="pt-1 flex items-center justify-between">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setTargetJobForAi(job);
+                              setIsAiModalOpen(true);
+                            }}
+                            className="text-xs h-8 border-primary/40 text-primary hover:bg-primary/10 w-full"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-amber-500" />
+                            AI Pest Identification Scanner (Free)
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Service Progression Buttons (Min 44px Touch Targets) */}
                   <div className="pt-2 border-t border-border">
@@ -727,6 +928,31 @@ export function MobileTodayClient({
             </div>
           </form>
         )}
+      </Modal>
+
+      {/* AI Pest Scanner Modal for Technicians */}
+      <Modal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        title="AI Pest Scanner (Free 0$ Cost)"
+        description="Snap or upload a photo to identify pest species and recommended EPA chemicals"
+        className="max-w-md"
+      >
+        <AiPestIdentifier
+          mode="technician"
+          onSelectPest={(detectedPest, chemicals) => {
+            setPestType(detectedPest);
+            if (chemicals.length > 0) {
+              setChemicalProduct(chemicals[0].name);
+              setEpaRegistrationNumber(chemicals[0].epa);
+            }
+            setIsAiModalOpen(false);
+            if (targetJobForAi) {
+              setActiveJobForLog(targetJobForAi);
+            }
+            toast.success(`Applied ${detectedPest} to treatment log!`);
+          }}
+        />
       </Modal>
     </div>
   );

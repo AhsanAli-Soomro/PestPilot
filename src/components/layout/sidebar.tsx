@@ -17,6 +17,11 @@ import {
   Settings,
   ShieldCheck,
   Crown,
+  UserPlus,
+  Boxes,
+  AlertOctagon,
+  Globe,
+  Sparkles,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -31,13 +36,17 @@ export function Sidebar({ role, isSuperAdmin, className }: SidebarProps) {
   const navItems = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Today's Jobs (Field)", href: "/mobile/today", icon: Truck, highlight: true },
-    { name: "Schedule", href: "/schedule", icon: Calendar },
-    { name: "Customers", href: "/customers", icon: Users },
+    { name: "Schedule & Route", href: "/schedule", icon: Calendar },
+    { name: "Customers (CRM)", href: "/customers", icon: Users },
+    { name: "Leads & Inquiries", href: "/leads", icon: UserPlus },
     { name: "Quotes", href: "/quotes", icon: FileSpreadsheet },
     { name: "Invoices", href: "/invoices", icon: Receipt },
-    { name: "Recurring Plans", href: "/service-plans", icon: Repeat },
+    { name: "Recurring Plans (AMC)", href: "/service-plans", icon: Repeat },
+    { name: "Chemicals & Inventory", href: "/inventory", icon: Boxes },
+    { name: "Complaints & Warranty", href: "/complaints", icon: AlertOctagon },
     { name: "Compliance Reports", href: "/reports", icon: FileCheck2 },
-    { name: "Reminders", href: "/reminders", icon: Bell },
+    { name: "Reminders & WhatsApp", href: "/reminders", icon: Bell },
+    { name: "Customer Portal", href: "/portal", icon: Globe },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 

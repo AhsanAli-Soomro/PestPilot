@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { PriceCalculator } from "@/components/price-calculator";
+import { AiPestIdentifier } from "@/components/ai-pest-identifier";
 import {
   ShieldCheck,
   Truck,
@@ -17,6 +19,8 @@ import {
   Calendar,
   Sparkles,
   Zap,
+  Calculator,
+  UserCheck,
 } from "lucide-react";
 
 export default function LandingPage() {
@@ -38,15 +42,18 @@ export default function LandingPage() {
             <a href="#features" className="hover:text-foreground transition-colors">
               Features
             </a>
+            <a href="#tools" className="hover:text-foreground transition-colors">
+              Free AI Tools
+            </a>
             <a href="#offline" className="hover:text-foreground transition-colors">
               Offline Field Mode
             </a>
             <a href="#pricing" className="hover:text-foreground transition-colors">
               Pricing
             </a>
-            <a href="#faq" className="hover:text-foreground transition-colors">
-              FAQ
-            </a>
+            <Link href="/portal" className="text-primary hover:underline font-bold">
+              Customer Portal
+            </Link>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -235,6 +242,26 @@ export default function LandingPage() {
               Zero spinning loading spinners. The app responds instantly on device.
             </div>
           </Card>
+        </div>
+      </section>
+
+      {/* Free Interactive Tools: Price Calculator & AI Pest Identifier */}
+      <section id="tools" className="py-20 px-4 sm:px-6 max-w-7xl mx-auto w-full border-t border-border">
+        <div className="text-center space-y-3 mb-12">
+          <Badge variant="secondary" className="text-xs font-bold uppercase tracking-wider">
+            100% Free Self-Service Tools
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            Try Our AI Pest Scanner &amp; Instant Price Estimator
+          </h2>
+          <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+            Zero subscription required to test. Identify invasive insects from a photo, calculate instant extermination costs, or access your self-service Customer Portal.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <PriceCalculator />
+          <AiPestIdentifier mode="customer" />
         </div>
       </section>
 
