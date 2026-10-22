@@ -32,9 +32,10 @@ interface HeaderProps {
   userName?: string | null;
   userEmail?: string | null;
   role?: string;
+  isSuperAdmin?: boolean;
 }
 
-export function Header({ organizationName, userName, userEmail, role }: HeaderProps) {
+export function Header({ organizationName, userName, userEmail, role, isSuperAdmin }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
   const pathname = usePathname();
@@ -126,7 +127,7 @@ export function Header({ organizationName, userName, userEmail, role }: HeaderPr
                     Settings & Team
                   </Link>
 
-                  {(role === "OWNER" || role === "ADMIN" || (userEmail && (userEmail.includes("ahsan") || userEmail.includes("admin")))) && (
+                  {isSuperAdmin && (
                     <Link
                       href="/admin"
                       onClick={() => setDropdownOpen(false)}
@@ -212,7 +213,17 @@ export function Header({ organizationName, userName, userEmail, role }: HeaderPr
               </nav>
             </div>
 
-            <div className="pt-4 border-t border-border">
+            <div className="pt-4 border-t border-border space-y-2">
+              {isSuperAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileDrawerOpen(false)}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-sm font-bold touch-target hover:bg-amber-500/25 transition-all shadow-sm"
+                >
+                  <Crown className="w-4 h-4 text-amber-500" />
+                  <span>Super Admin Portal</span>
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => {

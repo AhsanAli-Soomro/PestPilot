@@ -21,10 +21,11 @@ import {
 
 interface SidebarProps {
   role?: string;
+  isSuperAdmin?: boolean;
   className?: string;
 }
 
-export function Sidebar({ role, className }: SidebarProps) {
+export function Sidebar({ role, isSuperAdmin, className }: SidebarProps) {
   const pathname = usePathname();
 
   const navItems = [
@@ -97,12 +98,12 @@ export function Sidebar({ role, className }: SidebarProps) {
 
       {/* Super Admin Link & Role Pill */}
       <div className="pt-4 border-t border-border px-2 space-y-2">
-        {(role === "OWNER" || role === "ADMIN") && (
+        {isSuperAdmin && (
           <Link
             href="/admin"
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 transition-all shadow-sm"
           >
-            <Crown className="w-4 h-4" />
+            <Crown className="w-4 h-4 text-amber-500" />
             <span>Super Admin Portal</span>
           </Link>
         )}

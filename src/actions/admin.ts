@@ -259,3 +259,4 @@ export async function toggleSuperAdminAction(userId: string, isSuperAdmin: boole
     return { success: false, error: error.message };
   }
 }
+

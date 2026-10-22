@@ -113,19 +113,19 @@ export function AdminDashboardClient({
       {/* Top Header & Navigation Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground flex items-center gap-2">
             Platform Master Console
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             Global monitoring, tenant oversight, and platform-wide configuration
           </p>
         </div>
 
-        {/* Tab Buttons */}
-        <div className="flex items-center gap-1.5 p-1 bg-muted/60 border border-border rounded-xl">
+        {/* Tab Buttons (Horizontally scrollable on mobile) */}
+        <div className="flex items-center gap-1.5 p-1 bg-muted/60 border border-border rounded-xl overflow-x-auto no-scrollbar w-full sm:w-auto -mx-1 sm:mx-0 px-1 sm:px-1">
           <button
             onClick={() => setActiveTab("overview")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
               activeTab === "overview"
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -135,7 +135,7 @@ export function AdminDashboardClient({
           </button>
           <button
             onClick={() => setActiveTab("companies")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
               activeTab === "companies"
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -145,7 +145,7 @@ export function AdminDashboardClient({
           </button>
           <button
             onClick={() => setActiveTab("users")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
               activeTab === "users"
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -155,7 +155,7 @@ export function AdminDashboardClient({
           </button>
           <button
             onClick={() => setActiveTab("health")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shrink-0 whitespace-nowrap ${
               activeTab === "health"
                 ? "bg-card text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
@@ -316,7 +316,7 @@ export function AdminDashboardClient({
               <CardContent>
                 <div className="divide-y divide-border">
                   {stats.recentOrgs.map((org: any) => (
-                    <div key={org.id} className="py-3 flex items-center justify-between first:pt-0 last:pb-0">
+                    <div key={org.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 first:pt-0 last:pb-0">
                       <div>
                         <p className="font-semibold text-sm text-foreground flex items-center gap-2">
                           {org.name}
@@ -336,7 +336,7 @@ export function AdminDashboardClient({
                           Owner: {org.ownerName} ({org.ownerEmail})
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div className="sm:text-right">
                         <p className="text-xs font-semibold text-foreground">
                           {org.customerCount} customers • {org.jobCount} jobs
                         </p>
@@ -369,12 +369,12 @@ export function AdminDashboardClient({
               <CardContent>
                 <div className="divide-y divide-border">
                   {stats.recentUsers.map((user: any) => (
-                    <div key={user.id} className="py-3 flex items-center justify-between first:pt-0 last:pb-0">
+                    <div key={user.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 first:pt-0 last:pb-0">
                       <div>
                         <p className="font-semibold text-sm text-foreground">{user.name}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="sm:text-right">
                         <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded bg-secondary text-secondary-foreground">
                           {user.role}
                         </span>
@@ -424,8 +424,86 @@ export function AdminDashboardClient({
             </div>
           </div>
 
-          {/* Companies Table */}
-          <Card className="border-border shadow-sm overflow-hidden">
+          {/* Mobile Cards View (Visible on small screens) */}
+          <div className="space-y-3 md:hidden">
+            {filteredOrgs.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted-foreground border border-border rounded-xl bg-card">
+                No companies found matching your search.
+              </div>
+            ) : (
+              filteredOrgs.map((org) => (
+                <div key={org.id} className="p-3.5 rounded-xl border border-border bg-card space-y-3 shadow-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-bold text-foreground text-sm truncate">{org.name}</p>
+                      <p className="text-[11px] text-muted-foreground font-mono truncate">{org.slug}</p>
+                    </div>
+                    <span
+                      className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        org.planTier === "BUSINESS"
+                          ? "bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30"
+                          : org.planTier === "PRO"
+                          ? "bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30"
+                          : "bg-secondary text-secondary-foreground"
+                      }`}
+                    >
+                      {org.planTier}
+                    </span>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground space-y-0.5">
+                    <p>Owner: <span className="font-medium text-foreground">{org.ownerName}</span> ({org.ownerEmail})</p>
+                    <p className="text-[11px]">Joined: {new Date(org.createdAt).toLocaleDateString()}</p>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 py-2 px-3 bg-muted/40 rounded-lg text-center text-xs">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Customers</span>
+                      <span className="font-bold text-foreground">{org.customerCount}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Jobs</span>
+                      <span className="font-bold text-foreground">{org.jobCount}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground block">Invoices</span>
+                      <span className="font-bold text-foreground">{org.invoiceCount}</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-border flex items-center justify-between gap-2">
+                    <span className="text-[11px] text-muted-foreground font-semibold">Switch Plan:</span>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        disabled={updatingOrgId === org.id || org.planTier === PlanTier.FREE}
+                        onClick={() => handlePlanChange(org.id, PlanTier.FREE)}
+                        className="px-2 py-1 rounded text-[11px] font-bold bg-muted hover:bg-muted/80 disabled:opacity-40 transition-colors"
+                      >
+                        Free
+                      </button>
+                      <button
+                        disabled={updatingOrgId === org.id || org.planTier === PlanTier.PRO}
+                        onClick={() => handlePlanChange(org.id, PlanTier.PRO)}
+                        className="px-2 py-1 rounded text-[11px] font-bold bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 disabled:opacity-40 transition-colors"
+                      >
+                        Pro
+                      </button>
+                      <button
+                        disabled={updatingOrgId === org.id || org.planTier === PlanTier.BUSINESS}
+                        onClick={() => handlePlanChange(org.id, PlanTier.BUSINESS)}
+                        className="px-2 py-1 rounded text-[11px] font-bold bg-indigo-500/20 text-indigo-600 hover:bg-indigo-500/30 disabled:opacity-40 transition-colors"
+                      >
+                        Business
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Companies Table (Hidden on mobile) */}
+          <Card className="hidden md:block border-border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
@@ -536,8 +614,69 @@ export function AdminDashboardClient({
             </div>
           </div>
 
-          {/* Users Table */}
-          <Card className="border-border shadow-sm overflow-hidden">
+          {/* Mobile Users View (Visible on small screens) */}
+          <div className="space-y-3 md:hidden">
+            {filteredUsers.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted-foreground border border-border rounded-xl bg-card">
+                No users found matching your search.
+              </div>
+            ) : (
+              filteredUsers.map((user) => (
+                <div key={user.id} className="p-3.5 rounded-xl border border-border bg-card space-y-2.5 shadow-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="font-bold text-foreground text-sm truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                      {user.phone && user.phone !== "N/A" && (
+                        <p className="text-[11px] text-muted-foreground mt-0.5">📞 {user.phone}</p>
+                      )}
+                    </div>
+                    {user.isSuperAdmin ? (
+                      <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
+                        <ShieldCheck className="w-3 h-3" />
+                        Super Admin
+                      </span>
+                    ) : (
+                      <span className="shrink-0 text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground font-medium">
+                        User
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex flex-wrap gap-1">
+                    {user.companies.map((c: any, idx: number) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-muted font-medium text-foreground"
+                      >
+                        {c.orgName} ({c.role})
+                      </span>
+                    ))}
+                    {user.companies.length === 0 && (
+                      <span className="text-[10px] text-muted-foreground italic">
+                        No Organization
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
+                    <span className="text-[11px] text-muted-foreground">
+                      Joined {new Date(user.createdAt).toLocaleDateString()}
+                    </span>
+                    <button
+                      onClick={() => handleToggleSuperAdmin(user.id, user.isSuperAdmin)}
+                      className="px-2.5 py-1 rounded text-xs font-semibold border border-border hover:bg-muted transition-colors"
+                    >
+                      {user.isSuperAdmin ? "Revoke Admin" : "Make Super Admin"}
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Users Table (Hidden on mobile) */}
+          <Card className="hidden md:block border-border shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
@@ -685,3 +824,4 @@ export function AdminDashboardClient({
     </div>
   );
 }
+
