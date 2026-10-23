@@ -186,7 +186,9 @@ export default function LoginPage() {
             /* Staff / Technician Form */
             <>
               <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
-                <CardTitle className="text-lg sm:text-xl">Staff &amp; Field Technician Sign In</CardTitle>
+                <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
+                  Staff &amp; Field Technician Sign In
+                </h1>
                 <CardDescription className="text-xs">
                   For company owners, dispatchers, and field technicians
                 </CardDescription>
@@ -286,7 +288,9 @@ export default function LoginPage() {
             /* Customer Portal Form */
             <>
               <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
-                <CardTitle className="text-lg sm:text-xl">Customer Portal Access</CardTitle>
+                <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
+                  Customer Portal Access
+                </h1>
                 <CardDescription className="text-xs">
                   For homeowners &amp; clients to view appointments, EPA reports, and pay invoices
                 </CardDescription>

@@ -47,9 +47,9 @@ export default async function CustomerPortalPage({ searchParams }: PortalPagePro
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm shadow-primary/20">
                 <ShieldCheck className="w-5 h-5 text-emerald-300" />
               </div>
-              <span className="font-extrabold text-sm text-foreground">
+              <h1 className="font-extrabold text-sm text-foreground">
                 {customer?.organization?.name || "PestPilot"} &bull; Client Portal
-              </span>
+              </h1>
             </div>
           </div>
 

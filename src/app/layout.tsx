@@ -39,14 +39,13 @@ export const metadata: Metadata = {
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: ["/favicon.ico"],
   },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteUrl,
     siteName: "PestPilot",
-    title: "PestPilot - Modern Pest Control Field Service Management Software",
+    title: "PestPilot | Pest Control Field Service Software",
     description:
       "Quote, schedule, service, invoice, and track EPA chemical logs with zero latency offline field apps.",
     images: [
@@ -60,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PestPilot - Modern Pest Control Field Service Management Software",
+    title: "PestPilot | Pest Control Field Service Software",
     description:
       "Quote, schedule, service, invoice, and track EPA chemical logs with zero latency offline field apps.",
     images: ["/icon-512.png"],
@@ -124,9 +123,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta httpEquiv="x-dns-prefetch-control" content="on" />
-      </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
         <Providers>
           {children}

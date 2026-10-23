@@ -61,21 +61,15 @@ export default function LandingPage() {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link href="/portal">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex text-xs font-bold text-muted-foreground hover:text-foreground">
-                Customer Sign In
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button variant="outline" size="sm" className="text-xs font-bold">
-                Staff &amp; Tech Login
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button size="sm" className="font-bold text-xs">
-                Start Free Trial
-              </Button>
-            </Link>
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex text-xs font-bold text-muted-foreground hover:text-foreground">
+              <Link href="/portal">Customer Sign In</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="text-xs font-bold">
+              <Link href="/login">Staff &amp; Tech Login</Link>
+            </Button>
+            <Button asChild size="sm" className="font-bold text-xs">
+              <Link href="/signup">Start Free Trial</Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -90,7 +84,7 @@ export default function LandingPage() {
 
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-tight max-w-4xl mx-auto">
             Quote &bull; Schedule &bull; Service &bull; Invoice &bull; Recurring Reminders &mdash;{" "}
-            <span className="text-primary underline decoration-amber-500 decoration-wavy decoration-2">
+            <span className="text-primary font-black bg-primary/10 px-2.5 py-0.5 rounded-lg border border-primary/20">
               Works Offline in the Field.
             </span>
           </h1>
@@ -100,16 +94,14 @@ export default function LandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link href="/signup">
-              <Button size="lg" className="w-full sm:w-auto font-black text-base px-8 h-12 shadow-xl shadow-primary/25">
+            <Button asChild size="lg" className="w-full sm:w-auto font-black text-base px-8 h-12 shadow-xl shadow-primary/25">
+              <Link href="/signup">
                 Start Free 14-Day Trial <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-base h-12">
-                Live Demo Account
-              </Button>
-            </Link>
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="w-full sm:w-auto text-base h-12">
+              <Link href="/login">Live Demo Account</Link>
+            </Button>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-xs font-semibold text-muted-foreground">
@@ -319,16 +311,16 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link href="/signup" className="pt-6">
-              <Button variant="outline" className="w-full">
-                Get Started Free
+            <div className="pt-6">
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/signup">Get Started Free</Link>
               </Button>
-            </Link>
+            </div>
           </Card>
 
           {/* Starter */}
           <Card className="border-primary ring-2 ring-primary/20 p-6 flex flex-col justify-between relative shadow-xl">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold uppercase tracking-wider">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-extrabold uppercase tracking-wider">
               Most Popular for Small Teams
             </div>
 
@@ -340,7 +332,7 @@ export default function LandingPage() {
                   <span className="text-4xl font-black">$19</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
-                <p className="text-[11px] text-primary font-semibold mt-1">
+                <p className="text-xs text-primary font-semibold mt-1">
                   2 users included · $9/mo per additional user
                 </p>
               </div>
@@ -370,11 +362,11 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link href="/signup" className="pt-6">
-              <Button className="w-full font-bold">
-                Start 14-Day Free Trial
+            <div className="pt-6">
+              <Button asChild className="w-full font-bold">
+                <Link href="/signup">Start 14-Day Free Trial</Link>
               </Button>
-            </Link>
+            </div>
           </Card>
 
           {/* Professional */}
@@ -387,7 +379,7 @@ export default function LandingPage() {
                   <span className="text-4xl font-black">$39</span>
                   <span className="text-xs text-muted-foreground"> / month</span>
                 </div>
-                <p className="text-[11px] text-primary font-semibold mt-1">
+                <p className="text-xs text-primary font-semibold mt-1">
                   5 users included · $9/mo per additional user
                 </p>
               </div>
@@ -417,11 +409,11 @@ export default function LandingPage() {
               </ul>
             </div>
 
-            <Link href="/signup" className="pt-6">
-              <Button variant="outline" className="w-full">
-                Start Free Trial
+            <div className="pt-6">
+              <Button asChild variant="outline" className="w-full">
+                <Link href="/signup">Start Free Trial</Link>
               </Button>
-            </Link>
+            </div>
           </Card>
         </div>
       </section>
@@ -471,15 +463,30 @@ export default function LandingPage() {
             <span className="font-bold text-foreground">PestPilot</span> &bull; &copy; {new Date().getFullYear()} All rights reserved.
           </div>
 
-          <div className="flex items-center gap-6">
-            <Link href="/terms" className="hover:text-foreground">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <Link href="#features" className="hover:text-foreground underline-offset-4 hover:underline">
+              Features
+            </Link>
+            <Link href="#free-tools" className="hover:text-foreground underline-offset-4 hover:underline">
+              Free Tools
+            </Link>
+            <Link href="#pricing" className="hover:text-foreground underline-offset-4 hover:underline">
+              Pricing
+            </Link>
+            <Link href="/portal" className="hover:text-foreground underline-offset-4 hover:underline">
+              Customer Portal
+            </Link>
+            <Link href="/login" className="hover:text-foreground underline-offset-4 hover:underline">
+              Staff Login
+            </Link>
+            <Link href="/signup" className="hover:text-foreground underline-offset-4 hover:underline">
+              Sign Up
+            </Link>
+            <Link href="/terms" className="hover:text-foreground underline-offset-4 hover:underline">
               Terms of Service
             </Link>
-            <Link href="/privacy" className="hover:text-foreground">
+            <Link href="/privacy" className="hover:text-foreground underline-offset-4 hover:underline">
               Privacy Policy
-            </Link>
-            <Link href="/login" className="hover:text-foreground">
-              Technician Login
             </Link>
           </div>
         </div>

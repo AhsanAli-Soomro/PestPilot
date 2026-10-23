@@ -45,8 +45,8 @@ export default function TermsPage() {
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">Pure Software Immunity</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">Pure Software Immunity</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 PestPilot is purely an independent software provider. Government laws, EPA rules &amp; chemical safety are 100% the operator&apos;s sole responsibility.
               </p>
             </div>
@@ -57,8 +57,8 @@ export default function TermsPage() {
               <Scale className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">Affordable Plan Seats</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">Affordable Plan Seats</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Free ($0), Starter ($19/mo for 2 users), Professional ($39/mo for 5 users), and extra seats at just $9/mo each.
               </p>
             </div>
@@ -69,8 +69,8 @@ export default function TermsPage() {
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">You Retain Ownership</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">You Retain Ownership</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Your customer accounts, invoice ledgers, and property access details remain 100% your property.
               </p>
             </div>
@@ -105,7 +105,7 @@ export default function TermsPage() {
                 <AlertOctagon className="w-5 h-5 shrink-0" />
                 <span className="text-xs uppercase tracking-wider">CRITICAL LEGAL NOTICE &amp; REGULATORY EXCULPATION</span>
               </div>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong>PESTPILOT IS EXCLUSIVELY AN INDEPENDENT SOFTWARE TECHNOLOGY PROVIDER.</strong> We are not a pest control operator, exterminator, pesticide applicator, chemical manufacturer, or regulatory body. All governmental laws, regulations, and chemical safety mandates apply strictly to the licensed operator/subscriber—NOT to PestPilot or its software creators.
               </p>
             </div>
@@ -143,7 +143,7 @@ export default function TermsPage() {
 
             <div className="space-y-2.5">
               <h3 className="font-bold text-foreground text-xs">2.4 Comprehensive Defense, Indemnification &amp; Hold Harmless Agreement</h3>
-              <p className="uppercase text-[11px] font-semibold text-foreground">
+              <p className="uppercase text-xs font-semibold text-foreground">
                 YOU EXPRESSLY AGREE TO DEFEND, INDEMNIFY, AND HOLD COMPLETELY HARMLESS PESTPILOT AND ITS FOUNDERS, OWNERS, DIRECTORS, EMPLOYEES, DEVELOPERS, AND AGENTS FROM AND AGAINST ANY AND ALL CLAIMS, LOSSES, LIABILITIES, DAMAGES, GOVERNMENT FINES, EPA PENALTIES, LAWSUITS, CITATIONS, COSTS, AND REASONABLE ATTORNEY&apos;S FEES ARISING DIRECTLY OR INDIRECTLY FROM:
               </p>
               <ul className="list-disc pl-5 space-y-1">
@@ -276,7 +276,7 @@ export default function TermsPage() {
               <span className="w-6 h-6 rounded-lg bg-primary/15 text-primary flex items-center justify-center text-xs">9</span>
               Limitation of Liability &amp; Startup Protection
             </h2>
-            <p className="uppercase text-[11px] font-semibold text-foreground">
+            <p className="uppercase text-xs font-semibold text-foreground">
               TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL PESTPILOT, ITS FOUNDERS, OFFICERS, EMPLOYEES, DEVELOPERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, PUNITIVE, SPECIAL, INCIDENTAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES, OR LOSS OF BUSINESS PROFITS, GOODWILL, DATA, REGULATORY FINES, ENVIRONMENTAL CONTAMINATION, CHEMICAL REMEDIATION COSTS, OR LICENSING CITATIONS ARISING OUT OF OR IN CONNECTION WITH THE USE OF OR INABILITY TO USE THE SERVICE.
             </p>
             <p>

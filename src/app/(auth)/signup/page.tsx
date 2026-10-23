@@ -83,7 +83,9 @@ export default function SignupPage() {
 
         <Card className="border-border shadow-xl overflow-hidden">
           <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
-            <CardTitle className="text-lg sm:text-xl">Create your account</CardTitle>
+            <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
+              Create your account
+            </h1>
             <CardDescription className="text-xs">Get started in less than 3 minutes. No credit card required.</CardDescription>
           </CardHeader>
 

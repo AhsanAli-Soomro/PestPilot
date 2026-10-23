@@ -45,8 +45,8 @@ export default function PrivacyPage() {
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">Multi-Tenant Isolation</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">Multi-Tenant Isolation</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Your customer lists, chemical logs, and quotes are strictly partitioned by organization ID.
               </p>
             </div>
@@ -57,8 +57,8 @@ export default function PrivacyPage() {
               <Globe className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">Offline Sandboxing</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">Offline Sandboxing</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Field data stored in IndexedDB is local to your device and transmitted via TLS 1.3 encryption.
               </p>
             </div>
@@ -69,8 +69,8 @@ export default function PrivacyPage() {
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <p className="text-xs font-bold text-foreground">You Own Your Data</p>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
+              <h2 className="text-xs font-bold text-foreground">You Own Your Data</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Full export rights (CSV/PDF) for EPA pesticide compliance records and billing ledgers at any time.
               </p>
             </div>
@@ -178,7 +178,7 @@ export default function PrivacyPage() {
             </h2>
             <p>We work exclusively with vetted, SOC 2 compliant subprocessors:</p>
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse border border-border text-[11px]">
+              <table className="w-full text-left border-collapse border border-border text-xs">
                 <thead>
                   <tr className="bg-muted/50 text-foreground">
                     <th className="p-2 border border-border">Subprocessor</th>
@@ -210,7 +210,7 @@ export default function PrivacyPage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-2">
               We do <strong>not</strong> sell, rent, or trade your personal or customer data to third-party data brokers or advertisers.
             </p>
           </section>

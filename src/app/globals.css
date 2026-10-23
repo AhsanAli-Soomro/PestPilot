@@ -22,7 +22,7 @@
     --secondary-foreground: 154 45% 20%;
 
     --muted: 145 15% 93%;
-    --muted-foreground: 150 12% 40%;
+    --muted-foreground: 150 18% 28%;
 
     /* Accent warm amber #d97706 -> hsl(38, 92%, 44%) */
     --accent: 38 92% 46%;
@@ -112,9 +112,13 @@
     @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  /* High visibility outdoors min touch targets */
+  /* High visibility outdoors min touch targets with WCAG 2.4.7 focus indicator */
   button, a, input, select, textarea {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  :focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
   }
 }
 
