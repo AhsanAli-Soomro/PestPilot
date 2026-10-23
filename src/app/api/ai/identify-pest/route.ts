@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 
     // 1. Try Google Gemini AI Vision API if GEMINI_API_KEY is configured
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_KEY;
-    const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+    const geminiModel = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
     if (geminiKey) {
       try {
@@ -99,46 +99,55 @@ export async function POST(req: Request) {
         const mimeMatch = imageBase64.match(/^data:(image\/\w+);base64,/);
         const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
 
-        const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            signal: AbortSignal.timeout(8000), // 8-second safety timeout guard
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
+        // Try primary model first, fallback to lightweight model if needed
+        const candidateModels = Array.from(new Set([geminiModel, "gemini-3.5-flash", "gemini-3.5-flash-lite"]));
+
+        for (const currentModel of candidateModels) {
+          try {
+            const geminiRes = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${geminiKey}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                signal: AbortSignal.timeout(8000), // 8-second safety timeout guard
+                body: JSON.stringify({
+                  contents: [
                     {
-                      text: "Identify this insect, bug, or pest accurately. Respond strictly in valid JSON format with keys: pestName, scientificName, confidence (e.g. 95), riskLevel ('LOW'|'MODERATE'|'HIGH'|'CRITICAL'), description, epaChemicals (array of {name, epa, activeIngredient}), recommendedAction, urgency. If not a recognized pest, return pestName: 'Unknown Bug / Non-Pest'."
-                    },
-                    {
-                      inline_data: {
-                        mime_type: mimeType,
-                        data: cleanBase64
-                      }
+                      parts: [
+                        {
+                          text: "Identify this insect, bug, or pest accurately. Respond strictly in valid JSON format with keys: pestName, scientificName, confidence (e.g. 95), riskLevel ('LOW'|'MODERATE'|'HIGH'|'CRITICAL'), description, epaChemicals (array of {name, epa, activeIngredient}), recommendedAction, urgency. If not a recognized pest, return pestName: 'Unknown Bug / Non-Pest'."
+                        },
+                        {
+                          inline_data: {
+                            mime_type: mimeType,
+                            data: cleanBase64
+                          }
+                        }
+                      ]
                     }
                   ]
-                }
-              ]
-            })
-          }
-        );
+                })
+              }
+            );
 
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          const textResponse = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (textResponse) {
-            const jsonText = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
-            const parsed = JSON.parse(jsonText);
-            return NextResponse.json({
-              success: true,
-              result: parsed,
-              source: `google-${geminiModel}`
-            });
+            if (geminiRes.ok) {
+              const geminiData = await geminiRes.json();
+              const textResponse = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (textResponse) {
+                const jsonText = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+                const parsed = JSON.parse(jsonText);
+                return NextResponse.json({
+                  success: true,
+                  result: parsed,
+                  source: `google-${currentModel}`
+                });
+              }
+            } else {
+              console.warn(`[AI Pest API] ${currentModel} returned status ${geminiRes.status}`);
+            }
+          } catch (modelErr) {
+            console.warn(`[AI Pest API] Attempt with ${currentModel} error:`, modelErr);
           }
-        } else {
-          console.warn(`[AI Pest API] Gemini API responded with status ${geminiRes.status}. Engaging instant offline fallback.`);
         }
       } catch (geminiErr) {
         console.warn("[AI Pest API] Gemini attempt failed, falling back to built-in vision engine:", geminiErr);
