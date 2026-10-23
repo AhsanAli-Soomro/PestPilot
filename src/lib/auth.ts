@@ -1,6 +1,7 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
+import AppleProvider from "next-auth/providers/apple";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { Role, PlanTier } from "@prisma/client";
@@ -46,6 +47,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
+    AppleProvider({
+      clientId: process.env.AUTH_APPLE_ID || process.env.APPLE_ID || process.env.APPLE_CLIENT_ID || "",
+      clientSecret: process.env.AUTH_APPLE_SECRET || process.env.APPLE_SECRET || process.env.APPLE_CLIENT_SECRET || "",
     }),
     CredentialsProvider({
       name: "credentials",
@@ -103,7 +108,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider === "google" && user.email) {
+      if ((account?.provider === "google" || account?.provider === "apple") && user.email) {
         try {
           const email = user.email.toLowerCase().trim();
           let dbUser = await db.user.findUnique({

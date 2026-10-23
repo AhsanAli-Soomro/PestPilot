@@ -618,7 +618,7 @@ export async function loginCustomerWithSocialAction(params: {
             passwordHash,
             isVerified: true,
             verifiedAt: new Date().toISOString(),
-            customNotes: `Registered via 1-click ${params.provider.toUpperCase()} Sign-In`,
+            customNotes: `Registered via ${params.provider.toUpperCase()} Sign-In`,
           }),
         },
       });
@@ -658,6 +658,166 @@ export async function loginCustomerWithSocialAction(params: {
     };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Failed to sign in with social provider";
+    return { success: false, error: msg };
+  }
+}
+
+/**
+ * 8. Check if OAuth providers have valid configured credentials
+ */
+export async function getOAuthConfigAction() {
+  const googleId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID || "";
+  const googleSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET || "";
+  const appleId = process.env.AUTH_APPLE_ID || process.env.APPLE_ID || process.env.APPLE_CLIENT_ID || "";
+  const appleSecret = process.env.AUTH_APPLE_SECRET || process.env.APPLE_SECRET || process.env.APPLE_CLIENT_SECRET || "";
+
+  const isGoogleConfigured = Boolean(
+    googleId &&
+    !googleId.includes("your-google") &&
+    googleSecret &&
+    !googleSecret.includes("your-google")
+  );
+
+  const isAppleConfigured = Boolean(
+    appleId &&
+    !appleId.includes("your-apple") &&
+    appleSecret &&
+    !appleSecret.includes("your-apple")
+  );
+
+  return {
+    isGoogleConfigured,
+    isAppleConfigured,
+  };
+}
+
+/**
+ * 9. Initialize OAuth post-login: takes verified Google/Apple user data and sends verification OTP code
+ */
+export async function initCustomerOAuthOtpAction(params: {
+  email: string;
+  name?: string;
+  provider: "google" | "apple";
+}) {
+  try {
+    const cleanEmail = params.email.trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      return { success: false, error: "Invalid email returned from provider." };
+    }
+
+    // Check if customer already exists in DB
+    const existing = await db.customer.findFirst({
+      where: { email: { equals: cleanEmail, mode: "insensitive" }, deletedAt: null },
+    });
+
+    const { meta, textNotes } = existing ? parseCustomerNotes(existing.notes) : { meta: {}, textNotes: "" };
+
+    const rawName = params.name?.trim() || cleanEmail.split("@")[0].replace(/[._-]/g, " ");
+    const nameParts = rawName.split(" ").filter(Boolean);
+    const firstName = existing?.firstName || nameParts[0] || (params.provider === "google" ? "Google" : "Apple");
+    const lastName = existing?.lastName || nameParts.slice(1).join(" ") || "Customer";
+
+    // If customer is already verified, log them in directly
+    if (existing && meta.isVerified) {
+      const cookieStore = await cookies();
+      cookieStore.set("pestpilot_customer_identifier", cleanEmail, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+        path: "/",
+      });
+
+      return {
+        success: true,
+        alreadyVerified: true,
+        email: cleanEmail,
+        customer: {
+          id: existing.id,
+          firstName: existing.firstName,
+          lastName: existing.lastName,
+          email: existing.email,
+        },
+      };
+    }
+
+    // Generate 6-digit verification code
+    const code = generateOtpCode();
+    const expiresAt = Date.now() + 15 * 60 * 1000;
+
+    otpStore.set(cleanEmail, {
+      code,
+      expiresAt,
+      signupData: {
+        firstName,
+        lastName,
+        phone: existing?.phone || "",
+      },
+    });
+
+    if (existing) {
+      meta.otpCode = code;
+      meta.otpExpiresAt = expiresAt;
+      await db.customer.update({
+        where: { id: existing.id },
+        data: { notes: serializeCustomerNotes(meta, textNotes) },
+      });
+    }
+
+    // Send real verification email with OTP to customer's Gmail
+    const emailResult = await sendEmail({
+      to: cleanEmail,
+      subject: `Your PestPilot Customer Verification Code: ${code}`,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 540px; margin: 0 auto; padding: 28px; border: 1px solid #e2e8f0; border-radius: 16px; background: #ffffff;">
+          <div style="text-align: center; margin-bottom: 24px;">
+            <div style="display: inline-block; background: #1b4332; color: #ffffff; padding: 12px 18px; border-radius: 12px; font-weight: 800; font-size: 20px;">
+              🛡️ PestPilot
+            </div>
+            <h2 style="color: #0f172a; margin-top: 16px; font-size: 22px; font-weight: 800;">Verify Your ${params.provider === "google" ? "Google" : "Apple"} Account</h2>
+            <p style="color: #64748b; font-size: 14px; margin-top: 4px;">
+              Hi ${firstName}, enter this one-time code to activate your customer portal.
+            </p>
+          </div>
+
+          <div style="background: #f0fdf4; border: 1.5px dashed #22c55e; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0;">
+            <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; color: #15803d; display: block; margin-bottom: 8px;">
+              One-Time Verification Code
+            </span>
+            <div style="font-size: 36px; font-weight: 900; letter-spacing: 8px; color: #166534; font-family: monospace;">
+              ${code}
+            </div>
+          </div>
+
+          <p style="font-size: 13px; color: #64748b; line-height: 1.6; text-align: center;">
+            This security code will expire in <strong>15 minutes</strong>. If you did not sign in with ${params.provider === "google" ? "Google" : "Apple"}, please disregard this email.
+          </p>
+
+          <div style="border-top: 1px solid #f1f5f9; margin-top: 24px; padding-top: 16px; text-align: center; font-size: 12px; color: #94a3b8;">
+            PestPilot Technologies &bull; Field Service Management &bull; <a href="https://pestpilots.vercel.app" style="color: #1b4332; text-decoration: none; font-weight: 600;">pestpilots.vercel.app</a>
+          </div>
+        </div>
+      `,
+    });
+
+    if (!emailResult.success) {
+      return {
+        success: false,
+        error: emailResult.error || "Failed to deliver verification code to your email.",
+      };
+    }
+
+    return {
+      success: true,
+      alreadyVerified: false,
+      email: cleanEmail,
+      firstName,
+      lastName,
+      provider: params.provider,
+      message: `${params.provider === "google" ? "Google" : "Apple"} connected! We sent your 6-digit verification code to ${cleanEmail}.`,
+    };
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to initiate OAuth verification";
     return { success: false, error: msg };
   }
 }

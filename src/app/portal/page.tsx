@@ -6,6 +6,7 @@ import { CustomerPortalLogin } from "@/components/portal-login";
 import Link from "next/link";
 import { ShieldCheck, ArrowLeft, Phone, UserCircle2 } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { auth } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "Customer Portal | PestPilot",
@@ -24,6 +25,9 @@ export default async function CustomerPortalPage({ searchParams }: PortalPagePro
   const cookieStore = await cookies();
   const savedIdentifier = cookieStore.get("pestpilot_customer_identifier")?.value;
 
+  const session = await auth();
+  const authProvider = (params.auth_provider as string) || undefined;
+
   const rawParam = (params.id as string) || (params.email as string) || (params.phone as string);
   const identifier = rawParam || savedIdentifier;
 
@@ -31,6 +35,16 @@ export default async function CustomerPortalPage({ searchParams }: PortalPagePro
   if (identifier) {
     const result = await lookupCustomerPortalAction(identifier);
     customer = result.customer;
+  }
+
+  // If customer came from real Google / Apple OAuth and needs account activation / OTP
+  let initialOAuthData: { provider: "google" | "apple"; email: string; name?: string } | undefined = undefined;
+  if ((authProvider === "google" || authProvider === "apple") && session?.user?.email) {
+    initialOAuthData = {
+      provider: authProvider as "google" | "apple",
+      email: session.user.email,
+      name: session.user.name || undefined,
+    };
   }
 
   return (
@@ -69,7 +83,7 @@ export default async function CustomerPortalPage({ searchParams }: PortalPagePro
           <PortalClient initialCustomer={customer} loggedInIdentifier={identifier} />
         ) : (
           <div className="py-8">
-            <CustomerPortalLogin />
+            <CustomerPortalLogin initialOAuthData={initialOAuthData} />
           </div>
         )}
 

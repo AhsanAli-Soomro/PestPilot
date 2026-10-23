@@ -23,25 +23,32 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 import {
   requestCustomerOtpAction,
   verifyCustomerOtpAction,
   loginCustomerWithPasswordAction,
-  loginCustomerWithSocialAction,
+  getOAuthConfigAction,
+  initCustomerOAuthOtpAction,
 } from "@/actions/customer-auth";
 
-export function CustomerPortalLogin() {
+interface CustomerPortalLoginProps {
+  initialOAuthData?: {
+    provider: "google" | "apple";
+    email: string;
+    name?: string;
+  };
+}
+
+export function CustomerPortalLogin({ initialOAuthData }: CustomerPortalLoginProps = {}) {
   const router = useRouter();
 
   // Mode: "signin" | "signup" | "otp" | "success"
   const [authMode, setAuthMode] = React.useState<"signin" | "signup" | "otp" | "success">("signin");
   const [authMethod, setAuthMethod] = React.useState<"password" | "otp">("password");
-
-  // Social Sign-in modal ("google" | "apple" | null)
-  const [socialModal, setSocialModal] = React.useState<"google" | "apple" | null>(null);
-  const [socialEmail, setSocialEmail] = React.useState("");
-  const [socialName, setSocialName] = React.useState("");
-  const [socialLoading, setSocialLoading] = React.useState(false);
+  const [oauthProvider, setOauthProvider] = React.useState<"google" | "apple" | null>(
+    initialOAuthData?.provider || null
+  );
 
   // Sign In fields
   const [loginEmail, setLoginEmail] = React.useState("");
@@ -155,34 +162,78 @@ export function CustomerPortalLogin() {
     }
   };
 
-  // Handle 1-Click Social Sign In (Google / Apple)
-  const handleSocialLogin = async (provider: "google" | "apple", email: string, name?: string) => {
-    const cleanEmail = email.trim();
-    if (!cleanEmail || !cleanEmail.includes("@")) {
-      toast.error("Please enter a valid email address.");
-      return;
-    }
+  // Auto-process arrival from authentic Google / Apple OAuth flow
+  React.useEffect(() => {
+    if (!initialOAuthData?.email) return;
 
-    setSocialLoading(true);
-    try {
-      const res = await loginCustomerWithSocialAction({
-        provider,
-        email: cleanEmail,
-        name: name?.trim(),
-      });
+    let isMounted = true;
+    const processOAuthArrival = async () => {
+      setLoading(true);
+      try {
+        const res = await initCustomerOAuthOtpAction({
+          email: initialOAuthData.email,
+          name: initialOAuthData.name,
+          provider: initialOAuthData.provider,
+        });
 
-      if (res.success && res.customer) {
-        toast.success(`Signed in with ${provider === "google" ? "Google" : "Apple"}! Welcome, ${res.customer.firstName}`);
-        setSocialModal(null);
-        router.push("/portal");
-        router.refresh();
-      } else {
-        toast.error(res.error || "Social sign-in failed. Please try again.");
+        if (!isMounted) return;
+
+        if (res.success) {
+          if (res.alreadyVerified) {
+            toast.success(`Welcome back! ${initialOAuthData.provider === "google" ? "Google" : "Apple"} account verified.`);
+            router.push("/portal");
+            router.refresh();
+          } else {
+            setOtpTargetEmail(res.email || initialOAuthData.email);
+            setFirstName(res.firstName || "");
+            setLastName(res.lastName || "");
+            setOauthProvider(initialOAuthData.provider);
+            setOtpPendingMode("signup");
+            setAuthMode("otp");
+            toast.success(res.message);
+          }
+        } else {
+          toast.error(res.error || "Failed to initiate verification.");
+        }
+      } catch {
+        if (isMounted) toast.error("An error occurred during social verification.");
+      } finally {
+        if (isMounted) setLoading(false);
       }
+    };
+
+    processOAuthArrival();
+    return () => {
+      isMounted = false;
+    };
+  }, [initialOAuthData, router]);
+
+  // Handle Real Authentic Google / Apple OAuth Sign In
+  const handleSocialClick = async (provider: "google" | "apple") => {
+    setLoading(true);
+    try {
+      const config = await getOAuthConfigAction();
+      if (provider === "google" && !config.isGoogleConfigured) {
+        toast.error(
+          "Google OAuth credentials missing: Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET from Google Cloud Console in .env / Vercel."
+        );
+        setLoading(false);
+        return;
+      }
+      if (provider === "apple" && !config.isAppleConfigured) {
+        toast.error(
+          "Apple Sign-In credentials missing: Please add AUTH_APPLE_ID and AUTH_APPLE_SECRET in .env / Vercel."
+        );
+        setLoading(false);
+        return;
+      }
+
+      await signIn(provider, {
+        callbackUrl: `/portal?auth_provider=${provider}`,
+      });
     } catch {
-      toast.error("Failed to authenticate with social provider.");
-    } finally {
-      setSocialLoading(false);
+      toast.error(`Could not initiate ${provider === "google" ? "Google" : "Apple"} sign-in.`);
+      setLoading(false);
     }
   };
 
@@ -239,8 +290,7 @@ export function CustomerPortalLogin() {
   };
 
   return (
-    <>
-      <Card className="max-w-md mx-auto border-border shadow-2xl bg-card overflow-hidden">
+    <Card className="max-w-md mx-auto border-border shadow-2xl bg-card overflow-hidden">
       {/* Header */}
       <CardHeader className="text-center space-y-2 pb-4">
         <div className="w-12 h-12 rounded-2xl bg-primary mx-auto flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/25">
@@ -291,12 +341,9 @@ export function CustomerPortalLogin() {
               type="button"
               variant="outline"
               size="sm"
+              disabled={loading}
               className="text-xs h-10 font-semibold hover:bg-muted/80 border-border"
-              onClick={() => {
-                setSocialModal("google");
-                setSocialEmail("");
-                setSocialName("");
-              }}
+              onClick={() => handleSocialClick("google")}
             >
               <svg className="w-4 h-4 mr-2 shrink-0" viewBox="0 0 24 24">
                 <path
@@ -316,19 +363,16 @@ export function CustomerPortalLogin() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              <span>Google</span>
+              <span>Continue with Google</span>
             </Button>
 
             <Button
               type="button"
               variant="outline"
               size="sm"
+              disabled={loading}
               className="text-xs h-10 font-semibold hover:bg-muted/80 border-border"
-              onClick={() => {
-                setSocialModal("apple");
-                setSocialEmail("");
-                setSocialName("");
-              }}
+              onClick={() => handleSocialClick("apple")}
             >
               <svg className="w-4 h-4 mr-2 fill-current shrink-0" viewBox="0 0 24 24">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.56.65-.98 1.7-.85 2.72.99.08 2.03-.51 2.55-1.22z" />
@@ -465,12 +509,9 @@ export function CustomerPortalLogin() {
               type="button"
               variant="outline"
               size="sm"
+              disabled={loading}
               className="text-xs h-9 font-semibold hover:bg-muted/80 border-border"
-              onClick={() => {
-                setSocialModal("google");
-                setSocialEmail("");
-                setSocialName("");
-              }}
+              onClick={() => handleSocialClick("google")}
             >
               <svg className="w-3.5 h-3.5 mr-1.5 shrink-0" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -478,19 +519,16 @@ export function CustomerPortalLogin() {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
               </svg>
-              <span>Google</span>
+              <span>Continue with Google</span>
             </Button>
 
             <Button
               type="button"
               variant="outline"
               size="sm"
+              disabled={loading}
               className="text-xs h-9 font-semibold hover:bg-muted/80 border-border"
-              onClick={() => {
-                setSocialModal("apple");
-                setSocialEmail("");
-                setSocialName("");
-              }}
+              onClick={() => handleSocialClick("apple")}
             >
               <svg className="w-3.5 h-3.5 mr-1.5 fill-current shrink-0" viewBox="0 0 24 24">
                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.56.65-.98 1.7-.85 2.72.99.08 2.03-.51 2.55-1.22z" />
@@ -608,9 +646,13 @@ export function CustomerPortalLogin() {
       {/* --------------------------------------------------------------------- */}
       {authMode === "otp" && (
         <CardContent className="space-y-4">
-          <div className="p-3 rounded-xl bg-primary/10 border border-primary/20 text-center space-y-1">
+          <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/20 text-center space-y-1">
             <Mail className="w-6 h-6 text-primary mx-auto" />
-            <h4 className="font-bold text-sm text-foreground">Check Your Email</h4>
+            <h4 className="font-bold text-sm text-foreground">
+              {oauthProvider
+                ? `${oauthProvider === "google" ? "Google" : "Apple"} Account Connected! 🎉`
+                : "Check Your Email"}
+            </h4>
             <p className="text-xs text-muted-foreground">
               We sent a 6-digit security code to:
             </p>
@@ -728,106 +770,5 @@ export function CustomerPortalLogin() {
         </div>
       </CardFooter>
     </Card>
-
-    {/* --------------------------------------------------------------------- */}
-    {/* 1-Click Social Sign-In Modal (Google / Apple) */}
-    {/* --------------------------------------------------------------------- */}
-    {socialModal && (
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-card rounded-2xl border border-border shadow-2xl p-5 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-          {/* Header */}
-          <div className="flex items-center justify-between pb-2 border-b border-border">
-            <div className="flex items-center gap-2.5">
-              {socialModal === "google" ? (
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-border shadow-sm">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-                  </svg>
-                </div>
-              ) : (
-                <div className="w-8 h-8 rounded-full bg-foreground text-background flex items-center justify-center shadow-sm">
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.93-2.85-.9.04-1.99.6-2.63 1.35-.56.65-.98 1.7-.85 2.72.99.08 2.03-.51 2.55-1.22z" />
-                  </svg>
-                </div>
-              )}
-              <div>
-                <h3 className="text-sm font-bold text-foreground">
-                  {socialModal === "google" ? "Sign in with Google" : "Sign in with Apple ID"}
-                </h3>
-                <p className="text-[11px] text-muted-foreground">
-                  Instant 1-Click Verification &amp; Access
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setSocialModal(null)}
-              className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSocialLogin(socialModal, socialEmail, socialName);
-            }}
-            className="space-y-3 pt-1"
-          >
-            <div className="space-y-1">
-              <Label htmlFor="social-email" className="text-xs font-semibold">
-                {socialModal === "google" ? "Your Google Email (Gmail)" : "Your Apple ID Email"}
-              </Label>
-              <Input
-                id="social-email"
-                type="email"
-                placeholder={socialModal === "google" ? "yourname@gmail.com" : "yourname@icloud.com"}
-                value={socialEmail}
-                onChange={(e) => setSocialEmail(e.target.value)}
-                className="h-9 text-xs"
-                required
-              />
-            </div>
-
-            <div className="space-y-1">
-              <Label htmlFor="social-name" className="text-xs font-semibold">
-                Your Full Name (Optional)
-              </Label>
-              <Input
-                id="social-name"
-                type="text"
-                placeholder="e.g. John Doe"
-                value={socialName}
-                onChange={(e) => setSocialName(e.target.value)}
-                className="h-9 text-xs"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              disabled={socialLoading}
-              className="w-full font-bold h-10 mt-1 shadow-md shadow-primary/20"
-            >
-              {socialLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  Continue as {socialEmail || (socialModal === "google" ? "Google Account" : "Apple ID")} &rarr;
-                </>
-              )}
-            </Button>
-          </form>
-        </div>
-      </div>
-    )}
-    </>
   );
 }
