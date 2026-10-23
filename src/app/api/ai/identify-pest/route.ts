@@ -89,8 +89,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: "Image data is required" }, { status: 400 });
     }
 
-    // 1. Try Google Gemini Flash API if GEMINI_API_KEY is available (Generous 100% Free Tier)
+    // 1. Try Google Gemini AI Vision API if GEMINI_API_KEY is configured
     const geminiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_KEY;
+    const geminiModel = process.env.GEMINI_MODEL || "gemini-1.5-flash";
+
     if (geminiKey) {
       try {
         const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "");
@@ -98,10 +100,11 @@ export async function POST(req: Request) {
         const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
 
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            signal: AbortSignal.timeout(8000), // 8-second safety timeout guard
             body: JSON.stringify({
               contents: [
                 {
@@ -131,9 +134,11 @@ export async function POST(req: Request) {
             return NextResponse.json({
               success: true,
               result: parsed,
-              source: "gemini-free-ai"
+              source: `google-${geminiModel}`
             });
           }
+        } else {
+          console.warn(`[AI Pest API] Gemini API responded with status ${geminiRes.status}. Engaging instant offline fallback.`);
         }
       } catch (geminiErr) {
         console.warn("[AI Pest API] Gemini attempt failed, falling back to built-in vision engine:", geminiErr);
