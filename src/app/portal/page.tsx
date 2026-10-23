@@ -32,9 +32,26 @@ export default async function CustomerPortalPage({ searchParams }: PortalPagePro
   const identifier = rawParam || savedIdentifier;
 
   let customer = null;
-  if (identifier) {
+  // Only auto-resolve customer if NOT arriving from OAuth callback
+  // When arriving from OAuth (e.g. ?auth_provider=google), CustomerPortalLogin handles verification check first
+  if (identifier && !authProvider) {
     const result = await lookupCustomerPortalAction(identifier);
-    customer = result.customer;
+    if (result.customer) {
+      let isVerified = true;
+      if (result.customer.notes) {
+        try {
+          const parsed = JSON.parse(result.customer.notes);
+          if (parsed && typeof parsed === "object" && parsed._isCustomerMeta) {
+            if (parsed.isVerified === false) {
+              isVerified = false;
+            }
+          }
+        } catch {}
+      }
+      if (isVerified) {
+        customer = result.customer;
+      }
+    }
   }
 
   // If customer came from real Google / Apple OAuth and needs account activation / OTP
