@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Lock, FileText, Globe, CheckCircle2, AlertTriangle, Eye, HelpCircle } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy",
+  description: "PestPilot privacy policy, multi-tenant data isolation, and field records protection standards.",
+  alternates: {
+    canonical: "/privacy",
+  },
+};
 
 export default function PrivacyPage() {
   return (
@@ -36,7 +45,7 @@ export default function PrivacyPage() {
               <Lock className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">Multi-Tenant Isolation</h4>
+              <p className="text-xs font-bold text-foreground">Multi-Tenant Isolation</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 Your customer lists, chemical logs, and quotes are strictly partitioned by organization ID.
               </p>
@@ -48,7 +57,7 @@ export default function PrivacyPage() {
               <Globe className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">Offline Sandboxing</h4>
+              <p className="text-xs font-bold text-foreground">Offline Sandboxing</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 Field data stored in IndexedDB is local to your device and transmitted via TLS 1.3 encryption.
               </p>
@@ -60,7 +69,7 @@ export default function PrivacyPage() {
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">You Own Your Data</h4>
+              <p className="text-xs font-bold text-foreground">You Own Your Data</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 Full export rights (CSV/PDF) for EPA pesticide compliance records and billing ledgers at any time.
               </p>

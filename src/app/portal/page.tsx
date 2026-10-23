@@ -10,6 +10,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 export const metadata: Metadata = {
   title: "Customer Portal | PestPilot",
   description: "Manage pest control bookings, view upcoming visits, download certificates, and pay invoices online.",
+  alternates: {
+    canonical: "/portal",
+  },
 };
 
 interface PortalPageProps {

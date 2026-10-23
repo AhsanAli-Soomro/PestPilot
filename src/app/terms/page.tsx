@@ -1,5 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Scale, FileText, AlertOctagon, CheckCircle2, ShieldAlert } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "PestPilot SaaS terms of service, acceptable use policy, and operator compliance terms.",
+  alternates: {
+    canonical: "/terms",
+  },
+};
 
 export default function TermsPage() {
   return (
@@ -36,7 +45,7 @@ export default function TermsPage() {
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">Pure Software Immunity</h4>
+              <p className="text-xs font-bold text-foreground">Pure Software Immunity</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 PestPilot is purely an independent software provider. Government laws, EPA rules &amp; chemical safety are 100% the operator&apos;s sole responsibility.
               </p>
@@ -48,7 +57,7 @@ export default function TermsPage() {
               <Scale className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">Affordable Plan Seats</h4>
+              <p className="text-xs font-bold text-foreground">Affordable Plan Seats</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 Free ($0), Starter ($19/mo for 2 users), Professional ($39/mo for 5 users), and extra seats at just $9/mo each.
               </p>
@@ -60,7 +69,7 @@ export default function TermsPage() {
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground">You Retain Ownership</h4>
+              <p className="text-xs font-bold text-foreground">You Retain Ownership</p>
               <p className="text-[11px] text-muted-foreground mt-0.5">
                 Your customer accounts, invoice ledgers, and property access details remain 100% your property.
               </p>

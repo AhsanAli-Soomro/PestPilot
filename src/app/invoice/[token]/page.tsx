@@ -1,7 +1,16 @@
 import * as React from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { PublicInvoiceClient } from "./public-invoice-client";
+
+export const metadata: Metadata = {
+  title: "Service Invoice & Payment",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 interface PageProps {
   params: Promise<{ token: string }>;

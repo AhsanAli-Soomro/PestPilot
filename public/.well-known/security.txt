@@ -1,0 +1,15 @@
+# PestPilot Security Vulnerability Disclosure Policy
+# RFC 9116 compliant security information
+Contact: mailto:security@pestpilot.app
+Contact: https://pestpilots.vercel.app/terms
+Expires: 2027-12-31T23:59:59.000Z
+Encryption: https://pestpilots.vercel.app/.well-known/pgp-key.txt
+Preferred-Languages: en
+Canonical: https://pestpilots.vercel.app/.well-known/security.txt
+Policy: https://pestpilots.vercel.app/terms
+
+# Email Spoofing & Domain Authentication Policy:
+# Domain: pestpilot.app / pestpilots.vercel.app
+# SPF: v=spf1 include:_spf.google.com ~all
+# DMARC: v=DMARC1; p=reject; sp=reject; pct=100; rua=mailto:dmarc@pestpilot.app
+# DKIM: Enabled on all transactional dispatch emails

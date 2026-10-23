@@ -18,3 +18,4 @@ export function NativeAppRedirect() {
 
   return null;
 }
+

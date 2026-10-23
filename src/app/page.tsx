@@ -434,28 +434,28 @@ export default function LandingPage() {
 
         <div className="space-y-4 text-sm">
           <Card className="p-4 border-border">
-            <h4 className="font-bold text-foreground">Can technicians use PestPilot on their iPhones and Androids?</h4>
+            <h3 className="font-bold text-foreground">Can technicians use PestPilot on their iPhones and Androids?</h3>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               Yes! PestPilot is a progressive web app (PWA). Technicians can add it to their home screen with one tap. It has big 44px outdoor touch buttons, GPS directions, and offline support.
             </p>
           </Card>
 
           <Card className="p-4 border-border">
-            <h4 className="font-bold text-foreground">What is PestPilot&apos;s legal role regarding pesticide regulations and chemical compliance?</h4>
+            <h3 className="font-bold text-foreground">What is PestPilot&apos;s legal role regarding pesticide regulations and chemical compliance?</h3>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               PestPilot is an independent software technology platform and cloud-based recordkeeping tool. PestPilot is not a pest control operator, exterminator, or pesticide applicator. All compliance with federal (EPA/FIFRA), state applicator licensing, worker protection standards, chemical drift, and environmental safety laws is the 100% sole legal responsibility of the subscribing licensed operator.
             </p>
           </Card>
 
           <Card className="p-4 border-border">
-            <h4 className="font-bold text-foreground">Can I add extra technicians if my team grows beyond the included plan seats?</h4>
+            <h3 className="font-bold text-foreground">Can I add extra technicians if my team grows beyond the included plan seats?</h3>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               Yes! Both our Starter and Professional plans allow company owners to add additional technicians anytime at our affordable rate of just $9/month per extra user, without being locked into expensive enterprise pricing.
             </p>
           </Card>
 
           <Card className="p-4 border-border">
-            <h4 className="font-bold text-foreground">How does offline syncing handle conflicts?</h4>
+            <h3 className="font-bold text-foreground">How does offline syncing handle conflicts?</h3>
             <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
               PestPilot uses a strict deterministic policy: chemical logs and payments are append-only (they can never be overwritten). Job statuses use last-write-wins by version timestamp. A conflict log is visible in your settings at any time.
             </p>
