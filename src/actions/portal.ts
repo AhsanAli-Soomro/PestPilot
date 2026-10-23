@@ -101,106 +101,11 @@ export async function lookupCustomerPortalAction(identifier: string) {
       },
     });
 
-    // If no existing customer found in DB, return demo mock data for interactive exploration
+    // If no existing customer found in DB, return error so user is prompted to sign up or log in
     if (!customer) {
-      // Find default org
-      const defaultOrg = await db.organization.findFirst();
       return {
-        success: true,
-        isDemo: true,
-        customer: {
-          id: "demo-customer-101",
-          firstName: "Ali",
-          lastName: "Ahmed",
-          email: cleanId || "ali.ahmed@example.com",
-          phone: identifier || "+92 300 1234567",
-          organization: {
-            name: defaultOrg?.name || "PestPilot Pro Services",
-            phone: defaultOrg?.phone || "(555) 019-2834",
-            email: defaultOrg?.email || "dispatch@pestpilot.app",
-            currency: defaultOrg?.currency || "USD",
-          },
-          properties: [
-            {
-              id: "prop-demo-1",
-              address: "House 42, Street 7, DHA Phase 6",
-              city: "Karachi",
-              state: "Sindh",
-              postalCode: "75500",
-              squareFeet: 2400,
-            },
-          ],
-          jobs: [
-            {
-              id: "job-demo-upcoming",
-              title: "Quarterly Termite & Perimeter Shield",
-              description: "Full exterior barrier spray and interior termite station check",
-              status: "SCHEDULED",
-              scheduledDate: new Date(Date.now() + 86400000 * 3).toISOString(),
-              scheduledStartTime: "14:00",
-              scheduledEndTime: "15:30",
-              technician: { name: "Rashid Khan", phone: "+92 321 9876543" },
-              property: { address: "House 42, Street 7, DHA Phase 6" },
-              treatmentLogs: [],
-              invoices: [],
-            },
-            {
-              id: "job-demo-completed",
-              title: "General Pest Flushout (Cockroach & Ant Control)",
-              description: "Kitchen gel baiting and foundation residual barrier",
-              status: "COMPLETED",
-              scheduledDate: new Date(Date.now() - 86400000 * 25).toISOString(),
-              scheduledStartTime: "10:00",
-              scheduledEndTime: "11:30",
-              completedAt: new Date(Date.now() - 86400000 * 25).toISOString(),
-              technician: { name: "Rashid Khan", phone: "+92 321 9876543" },
-              property: { address: "House 42, Street 7, DHA Phase 6" },
-              treatmentLogs: [
-                {
-                  id: "log-demo-1",
-                  pestType: "Cockroaches & Ants",
-                  chemicalProduct: "Advion Cockroach Gel + Taurus SC",
-                  epaRegistrationNumber: "100-1484 / 53883-279",
-                  quantity: "4 bait placements, 2 gal 0.06% dilution",
-                  areasTreated: "Kitchen cupboards, exterior perimeter, garage baseboards",
-                  applicatorName: "Rashid Khan (Certified Tech)",
-                  licenseNumber: "EPA-TX-84920",
-                  technicianSignature: "data:image/png;base64,demoSignature",
-                  createdAt: new Date(Date.now() - 86400000 * 25).toISOString(),
-                },
-              ],
-              invoices: [
-                {
-                  id: "inv-demo-1",
-                  invoiceNumber: "INV-1025",
-                  totalCents: 11500,
-                  paidCents: 11500,
-                  status: "PAID",
-                  publicToken: "demo-paid-token",
-                },
-              ],
-            },
-          ],
-          invoices: [
-            {
-              id: "inv-demo-1",
-              invoiceNumber: "INV-1025",
-              totalCents: 11500,
-              paidCents: 11500,
-              status: "PAID",
-              dueDate: new Date().toISOString(),
-              publicToken: "demo-paid-token",
-            },
-          ],
-          activeAMC: {
-            id: "amc-demo-1",
-            name: "Annual Pest Protection Plan (AMC)",
-            frequency: "QUARTERLY",
-            priceCents: 9500,
-            nextVisit: new Date(Date.now() + 86400000 * 65).toLocaleDateString(),
-            status: "ACTIVE",
-          },
-        },
+        success: false,
+        error: "No customer account found with this email or phone number. Please create an account.",
       };
     }
 

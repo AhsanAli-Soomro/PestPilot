@@ -156,18 +156,20 @@ export async function requestCustomerOtpAction(params: {
       `,
     });
 
-    console.log(`[Customer Auth OTP] Sent to ${cleanEmail}: ${code} (Email configured: ${emailConfigured}, success: ${emailResult.success})`);
+    console.log(`[Customer Auth OTP] Sent to ${cleanEmail}: ${code} (Email success: ${emailResult.success})`);
+
+    if (!emailResult.success) {
+      return {
+        success: false,
+        error: emailResult.error || "Failed to deliver verification code to your email. Please verify your email address.",
+      };
+    }
 
     return {
       success: true,
       email: cleanEmail,
       mode: params.mode,
-      // Provide code if email provider is not yet set up, ensuring testing is never blocked
-      devOtp: !emailConfigured || process.env.NODE_ENV !== "production" ? code : undefined,
-      isSimulated: !emailConfigured,
-      message: emailConfigured
-        ? "Verification code sent to your email! Please check your inbox."
-        : "Simulation Mode: Email credentials are not yet configured in environment. Your test code is auto-filled!",
+      message: "Verification code sent to your email! Please check your inbox.",
     };
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : "Failed to send verification code";

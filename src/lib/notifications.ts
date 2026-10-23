@@ -26,13 +26,14 @@ const smtpSecure = process.env.SMTP_SECURE === "true" || smtpPort === 465;
 let nodemailerTransporter: Transporter | null = null;
 
 if (smtpUser && smtpPass) {
+  const cleanPass = smtpPass.trim().replace(/\s+/g, "");
   if (process.env.GMAIL_USER || (smtpHost && smtpHost.includes("gmail"))) {
     // Zero-config Gmail transport
     nodemailerTransporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: smtpUser,
-        pass: smtpPass,
+        user: smtpUser.trim(),
+        pass: cleanPass,
       },
     });
   } else if (smtpHost) {
@@ -42,8 +43,8 @@ if (smtpUser && smtpPass) {
       port: smtpPort,
       secure: smtpSecure,
       auth: {
-        user: smtpUser,
-        pass: smtpPass,
+        user: smtpUser.trim(),
+        pass: cleanPass,
       },
     });
   }

@@ -18,12 +18,9 @@ import {
   KeyRound,
   CheckCircle2,
   ArrowLeft,
-  Building2,
-  Home,
   Copy,
   Check,
   X,
-  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -61,7 +58,6 @@ export function CustomerPortalLogin() {
   const [otpCode, setOtpCode] = React.useState("");
   const [otpPendingMode, setOtpPendingMode] = React.useState<"login" | "signup">("login");
   const [resendCooldown, setResendCooldown] = React.useState(0);
-  const [devCode, setDevCode] = React.useState<string | undefined>(undefined);
 
   // Success state with auto-generated password
   const [createdPassword, setCreatedPassword] = React.useState("");
@@ -145,20 +141,10 @@ export function CustomerPortalLogin() {
       if (res.success) {
         setOtpTargetEmail(emailToUse);
         setOtpPendingMode(mode);
-        // Auto-fill code if in test/simulation mode for effortless testing
-        if (res.devOtp) {
-          setOtpCode(res.devOtp);
-        } else {
-          setOtpCode("");
-        }
+        setOtpCode("");
         setResendCooldown(60);
-        setDevCode(res.devOtp);
         setAuthMode("otp");
-        if (res.isSimulated) {
-          toast.info("Simulation mode: Code generated & auto-filled!");
-        } else {
-          toast.success(res.message);
-        }
+        toast.success(res.message || "Verification code sent to your email!");
       } else {
         toast.error(res.error || "Failed to send verification code.");
       }
@@ -242,12 +228,6 @@ export function CustomerPortalLogin() {
     } finally {
       setLoading(false);
     }
-  };
-
-  // 4. Quick Demo Switcher
-  const handleQuickDemo = (demoEmail: string) => {
-    setLoginEmail(demoEmail);
-    router.push(`/portal?email=${encodeURIComponent(demoEmail)}`);
   };
 
   const handleCopyPassword = () => {
@@ -377,7 +357,7 @@ export function CustomerPortalLogin() {
                   <Input
                     id="login-email"
                     type="email"
-                    placeholder="e.g. ali.ahmed@example.com"
+                    placeholder="e.g. name@example.com"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     className="h-10 text-xs pl-9"
@@ -439,7 +419,7 @@ export function CustomerPortalLogin() {
                   <Input
                     id="otp-email"
                     type="email"
-                    placeholder="e.g. ali.ahmed@example.com"
+                    placeholder="e.g. name@example.com"
                     value={loginEmail}
                     onChange={(e) => setLoginEmail(e.target.value)}
                     className="h-10 text-xs pl-9"
@@ -471,35 +451,6 @@ export function CustomerPortalLogin() {
               </div>
             </div>
           )}
-
-          {/* Quick Demo Access Bar */}
-          <div className="pt-2 border-t border-border mt-4">
-            <p className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground text-center mb-2">
-              One-Click Interactive Demo
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs h-8 justify-start"
-                onClick={() => handleQuickDemo("ali.ahmed@example.com")}
-              >
-                <Home className="w-3.5 h-3.5 mr-1.5 text-emerald-500" />
-                <span className="truncate">Residential Demo</span>
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="text-xs h-8 justify-start"
-                onClick={() => handleQuickDemo("rdecker@austintacos.com")}
-              >
-                <Building2 className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
-                <span className="truncate">Commercial Demo</span>
-              </Button>
-            </div>
-          </div>
         </CardContent>
       )}
 
@@ -573,7 +524,7 @@ export function CustomerPortalLogin() {
                   <User className="w-3.5 h-3.5 text-muted-foreground absolute left-3 top-3" />
                   <Input
                     id="reg-first-name"
-                    placeholder="Ali"
+                    placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                     className="h-9 text-xs pl-8"
@@ -588,7 +539,7 @@ export function CustomerPortalLogin() {
                 </Label>
                 <Input
                   id="reg-last-name"
-                  placeholder="Ahmed"
+                  placeholder="Last Name"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   className="h-9 text-xs"
@@ -606,7 +557,7 @@ export function CustomerPortalLogin() {
                 <Input
                   id="reg-email"
                   type="email"
-                  placeholder="ali.ahmed@example.com"
+                  placeholder="name@example.com"
                   value={signupEmail}
                   onChange={(e) => setSignupEmail(e.target.value)}
                   className="h-9 text-xs pl-8"
@@ -624,7 +575,7 @@ export function CustomerPortalLogin() {
                 <Input
                   id="reg-phone"
                   type="tel"
-                  placeholder="+92 300 1234567"
+                  placeholder="+1 (555) 000-0000"
                   value={signupPhone}
                   onChange={(e) => setSignupPhone(e.target.value)}
                   className="h-9 text-xs pl-8"
@@ -665,34 +616,6 @@ export function CustomerPortalLogin() {
             </p>
             <p className="text-xs font-bold text-primary font-mono">{otpTargetEmail}</p>
           </div>
-
-          {devCode && (
-            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  Test Verification Code
-                </span>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setOtpCode(devCode)}
-                  className="h-6 px-2 text-[10px] font-bold border-amber-500/40 text-amber-800 dark:text-amber-200 hover:bg-amber-500/20"
-                >
-                  Auto-Fill Code
-                </Button>
-              </div>
-              <div className="text-center py-1 bg-card/80 rounded-lg border border-amber-500/20">
-                <span className="font-mono text-xl font-black tracking-widest text-emerald-600 dark:text-emerald-400">
-                  {devCode}
-                </span>
-              </div>
-              <p className="text-[10px] text-muted-foreground text-center">
-                ℹ️ Note: Since live SMTP / Gmail credentials are not yet configured in environment variables, your code is provided right here so testing is never blocked.
-              </p>
-            </div>
-          )}
 
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div className="space-y-1.5 text-center">
@@ -849,70 +772,12 @@ export function CustomerPortalLogin() {
             </button>
           </div>
 
-          {/* Quick Demo Customer Profiles for Google/Apple */}
-          <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-              Choose an account to continue:
-            </span>
-            <div className="space-y-1.5">
-              <button
-                type="button"
-                disabled={socialLoading}
-                onClick={() => handleSocialLogin(socialModal, "ali.ahmed@example.com", "Ali Ahmed")}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-border hover:bg-muted/70 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center justify-center">
-                    AA
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Ali Ahmed</p>
-                    <p className="text-[11px] text-muted-foreground font-mono">ali.ahmed@example.com</p>
-                  </div>
-                </div>
-                <span className="text-[10px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full">
-                  Residential
-                </span>
-              </button>
-
-              <button
-                type="button"
-                disabled={socialLoading}
-                onClick={() => handleSocialLogin(socialModal, "rdecker@austintacos.com", "Rachel Decker")}
-                className="w-full flex items-center justify-between p-2.5 rounded-xl border border-border hover:bg-muted/70 transition-colors text-left"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold text-xs flex items-center justify-center">
-                    RD
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">Rachel Decker (Austin Tacos)</p>
-                    <p className="text-[11px] text-muted-foreground font-mono">rdecker@austintacos.com</p>
-                  </div>
-                </div>
-                <span className="text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold px-2 py-0.5 rounded-full">
-                  Commercial
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Or enter custom Google / Apple email */}
-          <div className="relative my-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
-              <span className="bg-card px-2 text-muted-foreground">Or use another account</span>
-            </div>
-          </div>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSocialLogin(socialModal, socialEmail, socialName);
             }}
-            className="space-y-3"
+            className="space-y-3 pt-1"
           >
             <div className="space-y-1">
               <Label htmlFor="social-email" className="text-xs font-semibold">

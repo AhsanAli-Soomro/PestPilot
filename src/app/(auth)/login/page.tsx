@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, ArrowRight, Loader2, Truck, Users, Building2, Home, UserCheck } from "lucide-react";
+import { ShieldCheck, ArrowRight, Loader2, Truck, Users } from "lucide-react";
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { loginCustomerPortalAction } from "@/actions/portal";
 import { CustomerPortalLogin } from "@/components/portal-login";
 
 export default function LoginPage() {
@@ -21,10 +20,6 @@ export default function LoginPage() {
   // Staff credentials
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
-
-  // Customer identifier
-  const [customerIdentifier, setCustomerIdentifier] = React.useState("");
-
   const [loading, setLoading] = React.useState(false);
 
   // Check active session on mount to auto-route already logged in users
@@ -75,59 +70,6 @@ export default function LoginPage() {
       }
     } catch {
       toast.error("An unexpected error occurred during login.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleStaffDemoLogin = async (demoEmail: string, isTech: boolean = false) => {
-    setEmail(demoEmail);
-    setPassword("PestPilot123!");
-    setLoading(true);
-    try {
-      const res = await signIn("credentials", {
-        email: demoEmail,
-        password: "PestPilot123!",
-        redirect: false,
-      });
-      if (res?.error) {
-        toast.error("Demo login error: Seed database first or sign up.");
-      } else {
-        if (isTech) {
-          toast.success("Signed in as Field Technician! Opening mobile jobs...");
-          window.location.href = "/mobile/today";
-        } else {
-          toast.success("Signed in as Company Owner!");
-          window.location.href = "/dashboard";
-        }
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Customer portal direct login
-  const handleCustomerSubmit = async (e?: React.FormEvent, customId?: string) => {
-    if (e) e.preventDefault();
-    const idToUse = (customId || customerIdentifier).trim();
-
-    if (!idToUse) {
-      toast.error("Please enter your registered email, mobile phone, or invoice #");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await loginCustomerPortalAction(idToUse);
-      if (res.success && res.customer) {
-        toast.success(`Welcome, ${res.customer.firstName}! Redirecting to Customer Portal...`);
-        window.location.href = `/portal?email=${encodeURIComponent(res.customer.email || idToUse)}`;
-      } else {
-        toast.success("Loading Demo Customer Portal...");
-        window.location.href = `/portal?email=${encodeURIComponent(idToUse)}`;
-      }
-    } catch {
-      toast.error("Could not sign in to customer portal");
     } finally {
       setLoading(false);
     }
@@ -239,40 +181,6 @@ export default function LoginPage() {
                 </Button>
               </CardContent>
             </form>
-
-            <div className="px-4 sm:px-6 pb-4">
-              <div className="relative my-2">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
-                  <span className="bg-card px-2 text-muted-foreground">Quick One-Click Test Accounts</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 mt-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-[11px] sm:text-xs h-9 px-2"
-                  onClick={() => handleStaffDemoLogin("owner@apexcontrol.com", false)}
-                >
-                  <Building2 className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
-                  <span className="truncate">Owner Demo</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="text-[11px] sm:text-xs h-9 px-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30"
-                  onClick={() => handleStaffDemoLogin("tech1@apexcontrol.com", true)}
-                >
-                  <Truck className="w-3.5 h-3.5 mr-1 shrink-0" />
-                  <span className="truncate">Tech Demo</span>
-                </Button>
-              </div>
-            </div>
 
             <CardFooter className="flex justify-center border-t border-border p-4 text-center">
               <p className="text-xs text-muted-foreground">

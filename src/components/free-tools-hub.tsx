@@ -237,7 +237,7 @@ export function FreeToolsHub() {
                   <div className="flex gap-2">
                     <Input
                       id="portal-input"
-                      placeholder="e.g. ali.ahmed@example.com or +92 300 1234567"
+                      placeholder="e.g. name@example.com or +1 555-0199"
                       value={portalLookup}
                       onChange={(e) => setPortalLookup(e.target.value)}
                       className="text-xs"
@@ -247,29 +247,6 @@ export function FreeToolsHub() {
                       Sign In <ArrowRight className="w-4 h-4 ml-1.5" />
                     </Button>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-9"
-                    onClick={(e) => handlePortalQuickAccess(e, "ali.ahmed@example.com")}
-                  >
-                    <Home className="w-3.5 h-3.5 mr-1 text-emerald-500" />
-                    <span>Residential Demo</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-9"
-                    onClick={(e) => handlePortalQuickAccess(e, "rdecker@austintacos.com")}
-                  >
-                    <Building2 className="w-3.5 h-3.5 mr-1 text-blue-500" />
-                    <span>Commercial Demo</span>
-                  </Button>
                 </div>
               </CardContent>
             </form>
