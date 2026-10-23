@@ -27,6 +27,11 @@ import {
   XCircle,
   Loader2,
   Plus,
+  MapPin,
+  User,
+  KeyRound,
+  Settings,
+  Home,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -37,6 +42,11 @@ import {
   renewCustomerServicePlanAction,
   logoutCustomerPortalAction,
 } from "@/actions/portal";
+import {
+  updateCustomerProfileAction,
+  updateCustomerPasswordAction,
+  saveCustomerAddressAction,
+} from "@/actions/customer-auth";
 import { formatDate, formatMoney } from "@/lib/utils";
 
 interface PortalClientProps {
@@ -46,7 +56,9 @@ interface PortalClientProps {
 
 export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClientProps) {
   const [customer, setCustomer] = React.useState(initialCustomer);
-  const [activeTab, setActiveTab] = React.useState<"appointments" | "history" | "invoices" | "amc" | "complaints" | "tools">("appointments");
+  const [activeTab, setActiveTab] = React.useState<
+    "appointments" | "history" | "invoices" | "amc" | "complaints" | "tools" | "settings"
+  >("appointments");
   const [loading, setLoading] = React.useState(false);
 
   // Modals
@@ -69,6 +81,39 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
   const [newPreferredTime, setNewPreferredTime] = React.useState("10:00");
   const [newNotes, setNewNotes] = React.useState("");
 
+  // Booking Address Selection & Input State
+  const [bookingPropertySelection, setBookingPropertySelection] = React.useState<string>(
+    customer.properties?.[0]?.id || "new"
+  );
+  const [bookingStreet, setBookingStreet] = React.useState(customer.properties?.[0]?.address || "");
+  const [bookingCity, setBookingCity] = React.useState(customer.properties?.[0]?.city || "Karachi");
+  const [bookingState, setBookingState] = React.useState(customer.properties?.[0]?.state || "Sindh");
+  const [bookingZip, setBookingZip] = React.useState(customer.properties?.[0]?.postalCode || "75500");
+  const [bookingGateCode, setBookingGateCode] = React.useState(customer.properties?.[0]?.gateCode || "");
+
+  // Settings State: Personal Information
+  const [profileFirstName, setProfileFirstName] = React.useState(customer.firstName || "");
+  const [profileLastName, setProfileLastName] = React.useState(customer.lastName || "");
+  const [profilePhone, setProfilePhone] = React.useState(customer.phone || "");
+  const [isUpdatingProfile, setIsUpdatingProfile] = React.useState(false);
+
+  // Settings State: Password Change
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [isUpdatingPassword, setIsUpdatingPassword] = React.useState(false);
+
+  // Settings State: Address Modal
+  const [isAddressModalOpen, setIsAddressModalOpen] = React.useState(false);
+  const [editingPropertyId, setEditingPropertyId] = React.useState<string | null>(null);
+  const [addressStreet, setAddressStreet] = React.useState("");
+  const [addressUnit, setAddressUnit] = React.useState("");
+  const [addressCity, setAddressCity] = React.useState("Karachi");
+  const [addressState, setAddressState] = React.useState("Sindh");
+  const [addressZip, setAddressZip] = React.useState("75500");
+  const [addressGateCode, setAddressGateCode] = React.useState("");
+  const [isSavingAddress, setIsSavingAddress] = React.useState(false);
+
   // Complaint form
   const [complaintSubject, setComplaintSubject] = React.useState("");
   const [complaintDetails, setComplaintDetails] = React.useState("");
@@ -81,6 +126,17 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
 
   const handleBookService = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newPreferredDate) {
+      toast.error("Please select an appointment date");
+      return;
+    }
+
+    const needsAddressInput = !customer.properties?.length || bookingPropertySelection === "new";
+    if (needsAddressInput && !bookingStreet.trim()) {
+      toast.error("Please provide your service property address before scheduling.");
+      return;
+    }
+
     setLoading(true);
     try {
       const fd = new FormData();
@@ -89,12 +145,33 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
       fd.append("preferredDate", newPreferredDate);
       fd.append("preferredTime", newPreferredTime);
       fd.append("notes", newNotes);
-      fd.append("propertyAddress", customer.properties?.[0]?.address || "");
+      fd.append("propertyId", bookingPropertySelection);
+      fd.append("propertyAddress", bookingStreet.trim());
+      fd.append("city", bookingCity.trim());
+      fd.append("state", bookingState.trim());
+      fd.append("postalCode", bookingZip.trim());
+      fd.append("gateCode", bookingGateCode.trim());
 
       const res = await bookCustomerServiceAction(fd);
       if (res.success) {
         toast.success(res.message);
         setIsBookModalOpen(false);
+
+        // If a new address was entered, reflect it immediately in profile
+        if (needsAddressInput && bookingStreet.trim()) {
+          const newProp = {
+            id: `prop-${Date.now()}`,
+            address: bookingStreet.trim(),
+            city: bookingCity.trim(),
+            state: bookingState.trim(),
+            postalCode: bookingZip.trim(),
+            gateCode: bookingGateCode.trim(),
+          };
+          setCustomer((prev: any) => ({
+            ...prev,
+            properties: [...(prev.properties || []), newProp],
+          }));
+        }
       } else {
         toast.error(res.error || "Failed to book service");
       }
@@ -102,6 +179,120 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
       toast.error("An error occurred");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdatingProfile(true);
+    try {
+      const res = await updateCustomerProfileAction({
+        customerId: customer.id,
+        firstName: profileFirstName,
+        lastName: profileLastName,
+        phone: profilePhone,
+      });
+      if (res.success) {
+        toast.success(res.message);
+        setCustomer((prev: any) => ({
+          ...prev,
+          firstName: profileFirstName,
+          lastName: profileLastName,
+          phone: profilePhone,
+        }));
+      } else {
+        toast.error(res.error || "Failed to update profile");
+      }
+    } catch {
+      toast.error("An error occurred while updating profile");
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      toast.error("New password must be at least 6 characters long");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    setIsUpdatingPassword(true);
+    try {
+      const res = await updateCustomerPasswordAction({
+        customerId: customer.id,
+        currentPassword,
+        newPassword,
+      });
+      if (res.success) {
+        toast.success(res.message);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast.error(res.error || "Failed to update password");
+      }
+    } catch {
+      toast.error("An error occurred while updating password");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleSaveAddress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!addressStreet.trim() || !addressCity.trim() || !addressState.trim() || !addressZip.trim()) {
+      toast.error("Please fill in Street Address, City, State, and Zip Code.");
+      return;
+    }
+    setIsSavingAddress(true);
+    try {
+      const res = await saveCustomerAddressAction({
+        customerId: customer.id,
+        propertyId: editingPropertyId || undefined,
+        address: addressStreet.trim(),
+        unit: addressUnit.trim(),
+        city: addressCity.trim(),
+        state: addressState.trim(),
+        postalCode: addressZip.trim(),
+        gateCode: addressGateCode.trim(),
+      });
+      if (res.success) {
+        toast.success(res.message);
+        setIsAddressModalOpen(false);
+        const savedProp = {
+          id: editingPropertyId || `prop-${Date.now()}`,
+          address: addressStreet.trim(),
+          unit: addressUnit.trim(),
+          city: addressCity.trim(),
+          state: addressState.trim(),
+          postalCode: addressZip.trim(),
+          gateCode: addressGateCode.trim(),
+        };
+        setCustomer((prev: any) => {
+          const existing = prev.properties || [];
+          if (editingPropertyId) {
+            return {
+              ...prev,
+              properties: existing.map((p: any) => (p.id === editingPropertyId ? savedProp : p)),
+            };
+          } else {
+            return {
+              ...prev,
+              properties: [...existing, savedProp],
+            };
+          }
+        });
+      } else {
+        toast.error(res.error || "Failed to save address");
+      }
+    } catch {
+      toast.error("An error occurred while saving address");
+    } finally {
+      setIsSavingAddress(false);
     }
   };
 
@@ -266,6 +457,7 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
           { id: "amc", label: "Maintenance Plan (AMC)" },
           { id: "complaints", label: "Complaints & Warranty" },
           { id: "tools", label: "AI Scanner & Calculator" },
+          { id: "settings", label: "Profile & Settings" },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -665,15 +857,358 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
         </div>
       )}
 
+      {/* Tab 7: Profile & Settings */}
+      {activeTab === "settings" && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-bold text-foreground">Account &amp; Profile Settings</h2>
+              <p className="text-xs text-muted-foreground">
+                Manage your personal contact info, change your login password, and update your service addresses.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setEditingPropertyId(null);
+                setAddressStreet("");
+                setAddressUnit("");
+                setAddressCity(customer.properties?.[0]?.city || "Karachi");
+                setAddressState(customer.properties?.[0]?.state || "Sindh");
+                setAddressZip(customer.properties?.[0]?.postalCode || "75500");
+                setAddressGateCode("");
+                setIsAddressModalOpen(true);
+              }}
+              className="text-xs"
+            >
+              <Plus className="w-3.5 h-3.5 mr-1 text-primary" /> Add Service Address
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* 1. Personal Information */}
+            <Card className="border-border shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" /> Personal Information
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Your primary contact details for appointment updates and service reports
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateProfile} className="space-y-3.5">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label className="text-xs font-semibold">First Name</Label>
+                      <Input
+                        value={profileFirstName}
+                        onChange={(e) => setProfileFirstName(e.target.value)}
+                        className="text-xs h-9"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs font-semibold">Last Name</Label>
+                      <Input
+                        value={profileLastName}
+                        onChange={(e) => setProfileLastName(e.target.value)}
+                        className="text-xs h-9"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Email Address (Account ID)</Label>
+                    <div className="relative">
+                      <Input
+                        value={customer.email || ""}
+                        disabled
+                        className="text-xs h-9 bg-muted/50 cursor-not-allowed font-medium text-muted-foreground"
+                      />
+                      <Badge variant="outline" className="absolute right-2 top-2 text-[10px] text-emerald-600 border-emerald-500/30 font-bold">
+                        Verified ✓
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">
+                      Email address is linked to your certified treatment certificates and invoices.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Contact Phone Number</Label>
+                    <Input
+                      value={profilePhone}
+                      onChange={(e) => setProfilePhone(e.target.value)}
+                      className="text-xs h-9"
+                      required
+                    />
+                  </div>
+
+                  <div className="pt-2 flex justify-end">
+                    <Button type="submit" size="sm" disabled={isUpdatingProfile} className="font-bold">
+                      {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
+                      Save Profile Changes
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* 2. Change Password Card */}
+            <Card className="border-border shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <KeyRound className="w-4 h-4 text-amber-500" /> Account Security &amp; Password
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Change the password you use to sign in to your customer portal
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdatePassword} className="space-y-3.5">
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Current Password</Label>
+                    <Input
+                      type="password"
+                      placeholder="Enter current password (if set)"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="text-xs h-9"
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">New Password</Label>
+                    <Input
+                      type="password"
+                      placeholder="Minimum 6 characters"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="text-xs h-9"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <Label className="text-xs font-semibold">Confirm New Password</Label>
+                    <Input
+                      type="password"
+                      placeholder="Re-type new password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="text-xs h-9"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+
+                  <div className="pt-2 flex justify-end">
+                    <Button type="submit" size="sm" variant="outline" disabled={isUpdatingPassword} className="font-bold">
+                      {isUpdatingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
+                      Update Password
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 3. Saved Service Addresses / Properties */}
+          <Card className="border-border shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between pb-3">
+              <div>
+                <CardTitle className="text-sm font-bold flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-emerald-600" /> Saved Service Properties &amp; Addresses
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Pest control technicians dispatch to these registered properties for inspections and treatments.
+                </CardDescription>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setEditingPropertyId(null);
+                  setAddressStreet("");
+                  setAddressUnit("");
+                  setAddressCity("Karachi");
+                  setAddressState("Sindh");
+                  setAddressZip("75500");
+                  setAddressGateCode("");
+                  setIsAddressModalOpen(true);
+                }}
+                className="text-xs"
+              >
+                <Plus className="w-3.5 h-3.5 mr-1" /> Add Address
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {(!customer.properties || customer.properties.length === 0) ? (
+                <div className="p-6 text-center border border-dashed rounded-xl bg-muted/20">
+                  <MapPin className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+                  <p className="text-xs font-semibold text-foreground">No service address saved yet</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Add your residence or business address so technicians know where to apply treatments.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  {customer.properties.map((prop: any) => (
+                    <div
+                      key={prop.id}
+                      className="p-3.5 rounded-xl border border-border bg-card hover:border-primary/40 transition-all flex flex-col justify-between space-y-2 shadow-xs"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-foreground flex items-center gap-1.5">
+                            <Home className="w-3.5 h-3.5 text-primary shrink-0" />
+                            {prop.address}
+                          </span>
+                          {prop.unit && (
+                            <Badge variant="secondary" className="text-[10px]">
+                              Unit {prop.unit}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {prop.city}, {prop.state} {prop.postalCode}
+                        </p>
+                        {prop.gateCode && (
+                          <p className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
+                            Gate Code: #{prop.gateCode}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="pt-2 border-t border-border flex justify-end">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs text-primary"
+                          onClick={() => {
+                            setEditingPropertyId(prop.id);
+                            setAddressStreet(prop.address);
+                            setAddressUnit(prop.unit || "");
+                            setAddressCity(prop.city);
+                            setAddressState(prop.state);
+                            setAddressZip(prop.postalCode);
+                            setAddressGateCode(prop.gateCode || "");
+                            setIsAddressModalOpen(true);
+                          }}
+                        >
+                          Edit Address
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Book Service Modal */}
       <Modal
         isOpen={isBookModalOpen}
         onClose={() => setIsBookModalOpen(false)}
         title="Schedule Pest Control Service"
-        description="Select your target pest and preferred appointment slot"
+        description="Select your target pest, service address, and preferred appointment slot"
         className="max-w-md"
       >
         <form onSubmit={handleBookService} className="space-y-3.5">
+          {/* Address Pre-Check Section */}
+          <div className="p-3 rounded-xl bg-secondary/50 border border-border space-y-2">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5 text-primary" /> Service Address *
+              </Label>
+              {customer.properties && customer.properties.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setBookingPropertySelection(bookingPropertySelection === "new" ? customer.properties[0].id : "new")
+                  }
+                  className="text-[11px] font-bold text-primary hover:underline"
+                >
+                  {bookingPropertySelection === "new" ? "Select Saved Address" : "+ Add New Address"}
+                </button>
+              )}
+            </div>
+
+            {customer.properties && customer.properties.length > 0 && bookingPropertySelection !== "new" ? (
+              <select
+                value={bookingPropertySelection}
+                onChange={(e) => {
+                  setBookingPropertySelection(e.target.value);
+                  const selected = customer.properties.find((p: any) => p.id === e.target.value);
+                  if (selected) {
+                    setBookingStreet(selected.address);
+                    setBookingCity(selected.city);
+                    setBookingState(selected.state);
+                    setBookingZip(selected.postalCode);
+                    setBookingGateCode(selected.gateCode || "");
+                  }
+                }}
+                className="w-full h-9 rounded-lg border border-input bg-card px-2.5 text-xs font-medium"
+              >
+                {customer.properties.map((p: any) => (
+                  <option key={p.id} value={p.id}>
+                    {p.address}, {p.city} ({p.postalCode})
+                  </option>
+                ))}
+                <option value="new">+ Enter Different Address</option>
+              </select>
+            ) : (
+              <div className="space-y-2 pt-1">
+                <Input
+                  placeholder="Street Address (e.g. House 42, St 7, DHA Phase 6)"
+                  value={bookingStreet}
+                  onChange={(e) => setBookingStreet(e.target.value)}
+                  className="h-8 text-xs bg-card"
+                  required
+                />
+                <div className="grid grid-cols-3 gap-1.5">
+                  <Input
+                    placeholder="City"
+                    value={bookingCity}
+                    onChange={(e) => setBookingCity(e.target.value)}
+                    className="h-8 text-xs bg-card"
+                    required
+                  />
+                  <Input
+                    placeholder="State"
+                    value={bookingState}
+                    onChange={(e) => setBookingState(e.target.value)}
+                    className="h-8 text-xs bg-card"
+                    required
+                  />
+                  <Input
+                    placeholder="Zip / Postal"
+                    value={bookingZip}
+                    onChange={(e) => setBookingZip(e.target.value)}
+                    className="h-8 text-xs bg-card"
+                    required
+                  />
+                </div>
+                <Input
+                  placeholder="Gate Code / Entry Instructions (Optional)"
+                  value={bookingGateCode}
+                  onChange={(e) => setBookingGateCode(e.target.value)}
+                  className="h-8 text-xs bg-card"
+                />
+                <p className="text-[10px] text-muted-foreground">
+                  * This address will be automatically saved to your profile settings for future visits.
+                </p>
+              </div>
+            )}
+          </div>
+
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold">Service Type / Target Pest *</Label>
             <select
@@ -731,6 +1266,93 @@ export function PortalClient({ initialCustomer, loggedInIdentifier }: PortalClie
             </Button>
             <Button type="submit" size="sm" disabled={loading} className="font-bold">
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Confirm Booking"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Add / Edit Address Modal */}
+      <Modal
+        isOpen={isAddressModalOpen}
+        onClose={() => setIsAddressModalOpen(false)}
+        title={editingPropertyId ? "Edit Service Address" : "Add New Property Address"}
+        description="Enter your residence or commercial property details for technician dispatches"
+        className="max-w-md"
+      >
+        <form onSubmit={handleSaveAddress} className="space-y-3.5">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">Street Address *</Label>
+            <Input
+              placeholder="e.g. 742 Evergreen Terrace"
+              value={addressStreet}
+              onChange={(e) => setAddressStreet(e.target.value)}
+              className="text-xs h-9"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Unit / Apt / Suite #</Label>
+              <Input
+                placeholder="Apt 4B (Optional)"
+                value={addressUnit}
+                onChange={(e) => setAddressUnit(e.target.value)}
+                className="text-xs h-9"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">City *</Label>
+              <Input
+                placeholder="Karachi"
+                value={addressCity}
+                onChange={(e) => setAddressCity(e.target.value)}
+                className="text-xs h-9"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">State / Province *</Label>
+              <Input
+                placeholder="Sindh"
+                value={addressState}
+                onChange={(e) => setAddressState(e.target.value)}
+                className="text-xs h-9"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Postal / Zip Code *</Label>
+              <Input
+                placeholder="75500"
+                value={addressZip}
+                onChange={(e) => setAddressZip(e.target.value)}
+                className="text-xs h-9"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">Gate Code or Access Notes (Optional)</Label>
+            <Input
+              placeholder="e.g. Gate Code #4829, beware of dog"
+              value={addressGateCode}
+              onChange={(e) => setAddressGateCode(e.target.value)}
+              className="text-xs h-9"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2 border-t border-border">
+            <Button type="button" variant="outline" size="sm" onClick={() => setIsAddressModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" size="sm" disabled={isSavingAddress} className="font-bold">
+              {isSavingAddress ? <Loader2 className="w-4 h-4 animate-spin mr-1.5" /> : null}
+              {editingPropertyId ? "Save Changes" : "Add Address"}
             </Button>
           </div>
         </form>

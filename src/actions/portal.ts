@@ -218,6 +218,11 @@ export async function bookCustomerServiceAction(formData: FormData) {
     const preferredDate = formData.get("preferredDate") as string;
     const preferredTime = (formData.get("preferredTime") as string) || "09:00";
     const propertyAddress = formData.get("propertyAddress") as string;
+    const city = (formData.get("city") as string) || "Karachi";
+    const state = (formData.get("state") as string) || "Sindh";
+    const postalCode = (formData.get("postalCode") as string) || "75500";
+    const gateCode = formData.get("gateCode") as string;
+    const selectedPropertyId = formData.get("propertyId") as string;
     const notes = formData.get("notes") as string;
 
     if (!preferredDate) {
@@ -232,16 +237,19 @@ export async function bookCustomerServiceAction(formData: FormData) {
       });
 
       if (customer) {
-        let propertyId = customer.properties[0]?.id;
-        if (!propertyId) {
+        let propertyId = selectedPropertyId && selectedPropertyId !== "new" ? selectedPropertyId : customer.properties[0]?.id;
+
+        // Create new property if customer has none or explicitly entered new address
+        if (!propertyId || selectedPropertyId === "new") {
           const newProp = await db.property.create({
             data: {
               organizationId: customer.organizationId,
               customerId: customer.id,
               address: propertyAddress || "Customer Residence",
-              city: "Main",
-              state: "TX",
-              postalCode: "00000",
+              city: city || "Karachi",
+              state: state || "Sindh",
+              postalCode: postalCode || "75500",
+              gateCode: gateCode || null,
             },
           });
           propertyId = newProp.id;

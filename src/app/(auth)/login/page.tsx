@@ -365,11 +365,17 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <CardFooter className="flex justify-center border-t border-border p-4 text-center">
+              <CardFooter className="flex flex-col justify-center border-t border-border p-4 text-center gap-1.5">
                 <p className="text-xs text-muted-foreground">
                   Need to schedule service or get an instant quote?{" "}
                   <Link href="/#free-tools" className="font-semibold text-primary hover:underline">
                     Try Free Tools
+                  </Link>
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  New Customer?{" "}
+                  <Link href="/portal" className="font-semibold text-primary hover:underline">
+                    Create Account &amp; Verify Email &rarr;
                   </Link>
                 </p>
               </CardFooter>
