@@ -58,6 +58,10 @@ const fromEmail =
   process.env.EMAIL_FROM ||
   (smtpUser ? `PestPilot <${smtpUser}>` : "PestPilot <notifications@pestpilot.app>");
 
+export function isEmailConfigured(): boolean {
+  return Boolean(nodemailerTransporter || resend);
+}
+
 /**
  * Universal email sender:
  * 1. Checks Nodemailer (SMTP / Gmail) first (free, no domain verification needed)

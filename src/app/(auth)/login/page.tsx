@@ -12,6 +12,7 @@ import { ShieldCheck, ArrowRight, Loader2, Truck, Users, Building2, Home, UserCh
 import { toast } from "sonner";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loginCustomerPortalAction } from "@/actions/portal";
+import { CustomerPortalLogin } from "@/components/portal-login";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -181,207 +182,110 @@ export default function LoginPage() {
           </button>
         </div>
 
-        <Card className="border-border shadow-xl overflow-hidden">
-          {loginType === "staff" ? (
-            /* Staff / Technician Form */
-            <>
-              <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
-                <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
-                  Staff &amp; Field Technician Sign In
-                </h1>
-                <CardDescription className="text-xs">
-                  For company owners, dispatchers, and field technicians
-                </CardDescription>
-              </CardHeader>
+        {loginType === "staff" ? (
+          <Card className="border-border shadow-xl overflow-hidden">
+            <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
+              <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
+                Staff &amp; Field Technician Sign In
+              </h1>
+              <CardDescription className="text-xs">
+                For company owners, dispatchers, and field technicians
+              </CardDescription>
+            </CardHeader>
 
-              <form onSubmit={handleStaffSubmit}>
-                <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-xs font-semibold">Company Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="owner@apexcontrol.com or tech1@apexcontrol.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      autoComplete="email"
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      autoComplete="current-password"
-                      className="text-xs"
-                    />
-                  </div>
-
-                  <Button type="submit" className="w-full mt-2 font-bold" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Signing in...
-                      </>
-                    ) : (
-                      <>
-                        Sign In as Staff <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </form>
-
-              <div className="px-4 sm:px-6 pb-4">
-                <div className="relative my-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
-                    <span className="bg-card px-2 text-muted-foreground">Quick One-Click Test Accounts</span>
-                  </div>
+            <form onSubmit={handleStaffSubmit}>
+              <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-xs font-semibold">Company Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="owner@apexcontrol.com or tech1@apexcontrol.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                    className="text-xs"
+                  />
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-[11px] sm:text-xs h-9 px-2"
-                    onClick={() => handleStaffDemoLogin("owner@apexcontrol.com", false)}
-                  >
-                    <Building2 className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
-                    <span className="truncate">Owner Demo</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-[11px] sm:text-xs h-9 px-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30"
-                    onClick={() => handleStaffDemoLogin("tech1@apexcontrol.com", true)}
-                  >
-                    <Truck className="w-3.5 h-3.5 mr-1 shrink-0" />
-                    <span className="truncate">Tech Demo</span>
-                  </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                    className="text-xs"
+                  />
+                </div>
+
+                <Button type="submit" className="w-full mt-2 font-bold" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Signing in...
+                    </>
+                  ) : (
+                    <>
+                      Sign In as Staff <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </form>
+
+            <div className="px-4 sm:px-6 pb-4">
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
+                  <span className="bg-card px-2 text-muted-foreground">Quick One-Click Test Accounts</span>
                 </div>
               </div>
 
-              <CardFooter className="flex justify-center border-t border-border p-4 text-center">
-                <p className="text-xs text-muted-foreground">
-                  Don&apos;t have a company account?{" "}
-                  <Link href="/signup" className="font-semibold text-primary hover:underline">
-                    Sign up for PestPilot
-                  </Link>
-                </p>
-              </CardFooter>
-            </>
-          ) : (
-            /* Customer Portal Form */
-            <>
-              <CardHeader className="space-y-1 p-4 sm:p-6 pb-2 sm:pb-4">
-                <h1 className="text-lg sm:text-xl font-bold leading-none tracking-tight text-foreground">
-                  Customer Portal Access
-                </h1>
-                <CardDescription className="text-xs">
-                  For homeowners &amp; clients to view appointments, EPA reports, and pay invoices
-                </CardDescription>
-              </CardHeader>
-
-              <form onSubmit={(e) => handleCustomerSubmit(e)}>
-                <CardContent className="space-y-4 p-4 sm:p-6 pt-0">
-                  <div className="space-y-2">
-                    <Label htmlFor="cust-id" className="text-xs font-semibold">
-                      Registered Email, Mobile Phone, or Invoice #
-                    </Label>
-                    <Input
-                      id="cust-id"
-                      type="text"
-                      placeholder="e.g. ali.ahmed@example.com or +92 300 1234567"
-                      value={customerIdentifier}
-                      onChange={(e) => setCustomerIdentifier(e.target.value)}
-                      className="text-xs"
-                      autoFocus
-                    />
-                    <p className="text-[11px] text-muted-foreground">
-                      No password required. Instant lookup using your booking contact details.
-                    </p>
-                  </div>
-
-                  <Button type="submit" className="w-full mt-2 font-bold" disabled={loading}>
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Accessing Portal...
-                      </>
-                    ) : (
-                      <>
-                        Open Customer Portal <ArrowRight className="ml-2 h-4 w-4" />
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </form>
-
-              <div className="px-4 sm:px-6 pb-4">
-                <div className="relative my-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
-                    <span className="bg-card px-2 text-muted-foreground">Or Explore Demo Portals</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-[11px] sm:text-xs h-9 px-2"
-                    onClick={() => handleCustomerSubmit(undefined, "ali.ahmed@example.com")}
-                  >
-                    <Home className="w-3.5 h-3.5 mr-1 text-emerald-500 shrink-0" />
-                    <span className="truncate">Residential Demo</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="text-[11px] sm:text-xs h-9 px-2"
-                    onClick={() => handleCustomerSubmit(undefined, "rdecker@austintacos.com")}
-                  >
-                    <Building2 className="w-3.5 h-3.5 mr-1 text-blue-500 shrink-0" />
-                    <span className="truncate">Commercial Demo</span>
-                  </Button>
-                </div>
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-[11px] sm:text-xs h-9 px-2"
+                  onClick={() => handleStaffDemoLogin("owner@apexcontrol.com", false)}
+                >
+                  <Building2 className="w-3.5 h-3.5 mr-1 text-primary shrink-0" />
+                  <span className="truncate">Owner Demo</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-[11px] sm:text-xs h-9 px-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border-amber-500/30"
+                  onClick={() => handleStaffDemoLogin("tech1@apexcontrol.com", true)}
+                >
+                  <Truck className="w-3.5 h-3.5 mr-1 shrink-0" />
+                  <span className="truncate">Tech Demo</span>
+                </Button>
               </div>
+            </div>
 
-              <CardFooter className="flex flex-col justify-center border-t border-border p-4 text-center gap-1.5">
-                <p className="text-xs text-muted-foreground">
-                  Need to schedule service or get an instant quote?{" "}
-                  <Link href="/#free-tools" className="font-semibold text-primary hover:underline">
-                    Try Free Tools
-                  </Link>
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  New Customer?{" "}
-                  <Link href="/portal" className="font-semibold text-primary hover:underline">
-                    Create Account &amp; Verify Email &rarr;
-                  </Link>
-                </p>
-              </CardFooter>
-            </>
-          )}
-        </Card>
+            <CardFooter className="flex justify-center border-t border-border p-4 text-center">
+              <p className="text-xs text-muted-foreground">
+                Don&apos;t have a company account?{" "}
+                <Link href="/signup" className="font-semibold text-primary hover:underline">
+                  Sign up for PestPilot
+                </Link>
+              </p>
+            </CardFooter>
+          </Card>
+        ) : (
+          <CustomerPortalLogin />
+        )}
       </div>
     </div>
   );
