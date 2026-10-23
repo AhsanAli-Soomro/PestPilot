@@ -272,8 +272,8 @@ export default function PrivacyPage() {
             </p>
             <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-1">
               <p className="font-semibold text-foreground">PestPilot Privacy & Data Protection Team</p>
-              <p>Email: <a href="mailto:privacy@pestpilot.app" className="text-primary hover:underline">privacy@pestpilot.app</a></p>
-              <p>Support: <a href="mailto:support@pestpilot.app" className="text-primary hover:underline">support@pestpilot.app</a></p>
+              <p>Email: <a href="mailto:&#112;&#114;&#105;&#118;&#97;&#99;&#121;&#64;&#112;&#101;&#115;&#116;&#112;&#105;&#108;&#111;&#116;&#46;&#97;&#112;&#112;" className="text-primary hover:underline">privacy&#64;pestpilot&#46;app</a></p>
+              <p>Support: <a href="mailto:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#112;&#101;&#115;&#116;&#112;&#105;&#108;&#111;&#116;&#46;&#97;&#112;&#112;" className="text-primary hover:underline">support&#64;pestpilot&#46;app</a></p>
               <p>Website: <a href="https://pestpilot.app" className="text-primary hover:underline">https://pestpilot.app</a></p>
             </div>
           </section>

@@ -13,3 +13,4 @@ Policy: https://pestpilots.vercel.app/terms
 # SPF: v=spf1 include:_spf.google.com ~all
 # DMARC: v=DMARC1; p=reject; sp=reject; pct=100; rua=mailto:dmarc@pestpilot.app
 # DKIM: Enabled on all transactional dispatch emails
+

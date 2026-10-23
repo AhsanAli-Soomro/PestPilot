@@ -9,7 +9,7 @@ const siteUrl = "https://pestpilots.vercel.app";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "PestPilot - Modern Pest Control Field Service Management Software",
+    default: "PestPilot | Pest Control Field Service Software",
     template: "%s | PestPilot",
   },
   description:
@@ -125,13 +125,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
+        <meta httpEquiv="x-dns-prefetch-control" content="on" />
       </head>
       <body className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
         <Providers>
@@ -139,6 +133,10 @@ export default function RootLayout({
           <Toaster richColors position="bottom-right" />
           <ServiceWorkerRegister />
         </Providers>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
       </body>
     </html>
   );

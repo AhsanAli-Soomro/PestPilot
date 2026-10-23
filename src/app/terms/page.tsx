@@ -304,8 +304,8 @@ export default function TermsPage() {
             <p>For legal inquiries, contract notices, or commercial partnership queries:</p>
             <div className="p-4 rounded-xl bg-muted/40 border border-border space-y-1">
               <p className="font-semibold text-foreground">PestPilot Legal Department</p>
-              <p>Email: <a href="mailto:legal@pestpilot.app" className="text-primary hover:underline">legal@pestpilot.app</a></p>
-              <p>Commercial Support: <a href="mailto:support@pestpilot.app" className="text-primary hover:underline">support@pestpilot.app</a></p>
+              <p>Email: <a href="mailto:&#108;&#101;&#103;&#97;&#108;&#64;&#112;&#101;&#115;&#116;&#112;&#105;&#108;&#111;&#116;&#46;&#97;&#112;&#112;" className="text-primary hover:underline">legal&#64;pestpilot&#46;app</a></p>
+              <p>Commercial Support: <a href="mailto:&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#112;&#101;&#115;&#116;&#112;&#105;&#108;&#111;&#116;&#46;&#97;&#112;&#112;" className="text-primary hover:underline">support&#64;pestpilot&#46;app</a></p>
               <p>Corporate: PestPilot Software Technologies, Inc.</p>
             </div>
           </section>
